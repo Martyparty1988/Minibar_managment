@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Bar Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            background: url('https://static.vecteezy.com/system/resources/previews/030/226/118/large_2x/tropical-paradise-beach-with-white-sand-and-crystal-clear-blue-water-beautiful-natural-summer-holidays-background-travel-tourism-wide-panorama-background-concept-ai-generative-free-photo.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        h1, h2 {
+            color: #444;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .form-group {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .form-group label {
+            flex: 2;
+            margin-right: 10px;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 5px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            max-width: 250px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .invoice {
+            background-color: white;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .invoice-details p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mini Bar Management</h1>
+
+        <div class="form-group">
+            <label for="budvarGift">Budvar Dárek (0 Kč):</label>
+            <input type="text" id="budvarGift" placeholder="">
+            <input type="text" id="budvarGiftNote" placeholder="Poznámka k dárku" style="margin-left: 10px;">
+        </div>
+
+        <div class="form-group">
+            <label for="vila">Výběr vily:</label>
+            <select id="vila">
+                <option value="Českomalínská">Českomalínská</option>
+                <option value="Na Marně">Na Marně</option>
+                <option value="Ve svahu">Ve svahu</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="eurRate">Kurz EUR/CZK:</label>
+            <input type="text" id="eurRate" placeholder="Aktuální kurz">
+        </div>
+
+        <div class="form-group">
+            <label for="guests">Počet hostů:</label>
+            <input type="text" id="guests" placeholder="1">
+        </div>
+
+        <div class="form-group">
+            <label for="nights">Počet nocí:</label>
+            <input type="text" id="nights" placeholder="1">
+        </div>
+
+        <div class="form-group">
+            <label for="currency">Platba v:</label>
+            <select id="currency">
+                <option value="CZK">Koruny (CZK)</option>
+                <option value="EUR">Eura (€)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="applyDiscount"> 
+                Sleva 10% (mimo City Tax)
+            </label>
+        </div>
+
+        <h2>Nápoje a Položky</h2>
+        <div id="items">
+            <div class="form-group">
+                <label for="budvar">Budvar (59 Kč):</label>
+                <input type="text" id="budvar" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="malibu">Malibu (99 Kč):</label>
+                <input type="text" id="malibu" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="jackCola">Jack s colou (99 Kč):</label>
+                <input type="text" id="jackCola" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="mule">Moscow Mule (99 Kč):</label>
+                <input type="text" id="mule" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="ginTonic">Gin-Tonic (99 Kč):</label>
+                <input type="text" id="ginTonic" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="mojito">Mojito (99 Kč):</label>
+                <input type="text" id="mojito" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="coke">Coca-Cola (32 Kč):</label>
+                <input type="text" id="coke" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="sprite">Sprite (32 Kč):</label>
+                <input type="text" id="sprite" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="redBull">Red Bull (59 Kč):</label>
+                <input type="text" id="redBull" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="prosecco">Prosecco (390 Kč):</label>
+                <input type="text" id="prosecco" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="pivo30">Pivo sud 30 l (125 €):</label>
+                <input type="text" id="pivo30" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="pivo50">Pivo sud 50 l (175 €):</label>
+                <input type="text" id="pivo50" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="wellness">Wellness (€):</label>
+                <input type="text" id="wellness" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="plyn">Plyn (12 €):</label>
+                <input type="text" id="plyn" placeholder="">
+            </div>
+        </div>
+
+        <button onclick="generateInvoice()">Generovat fakturu</button>
+
+        <div id="invoice" class="invoice" style="display:none;">
+            <div class="invoice-header">
+                <h2>Faktura</h2>
+                <p id="invoiceVila"></p>
+                <p id="invoiceDate"></p>
+            </div>
+            <div class="invoice-details" id="invoiceDetails"></div>
+            <div class="invoice-total" id="invoiceTotal"></div>
+        </div>
+    </div>
+
+    <script>
+        const prices = {
+            budvar: 59,
+            malibu: 99,
+            jackCola: 99,
+            mule: 99,
+            ginTonic: 99,
+            mojito: 99,
+            coke: 32,
+            sprite: 32,
+            redBull: 59,
+            prosecco: 390,
+            pivo30: 125,
+            pivo50: 175,
+            plyn: 12
+        };
+
+        function generateInvoice() {
+            const vila = document.getElementById('vila').value;
+            const guests = parseInt(document.getElementById('guests').value) || 1;
+            const nights = parseInt(document.getElementById('nights').value) || 1;
+            const currency = document.getElementById('currency').value;
+            const eurRate = parseFloat(document.getElementById('eurRate').value) || 24.5;
+            const applyDiscount = document.getElementById('applyDiscount').checked;
+            const budvarGiftQty = parseInt(document.getElementById('budvarGift').value) || 0;
+            const budvarGiftNote = document.getElementById('budvarGiftNote').value;
+
+            // Nastavení data faktury
+            const invoiceDate = new Date().toLocaleDateString('cs-CZ');
+
+            let totalCost = 2 * guests * nights; // City Tax
+            let invoiceItems = [`Městská taxa: ${guests} hostů x ${nights} nocí x 2 €`];
+
+            // Budvar dárek
+            if (budvarGiftQty > 0) {
+                invoiceItems.push(`Budvar dárek: ${budvarGiftQty} x 0 Kč ${budvarGiftNote ? `(${budvarGiftNote})` : ''}`);
+            }
+
+            // Výpočet ceny za jednotlivé položky
+            let subtotal = 0;
+            Object.keys(prices).forEach(item => {
+                const quantity = parseInt(document.getElementById(item).value) || 0;
+                if (quantity > 0) {
+                    const itemLabel = document.querySelector(`label[for="${item}"]`);
+                    const itemName = itemLabel.textContent.split('(')[0].trim();
+                    const itemPrice = itemLabel.textContent.match(/\(([^)]+)\)/)[1];
+                    const isPriceInEur = itemPrice.includes('€');
+                    const price = parseFloat(itemPrice.replace('€', '').replace('Kč', ''));
+                    
+                    let itemTotal = quantity * price;
+                    if (isPriceInEur && currency === 'CZK') {
+                        itemTotal *= eurRate;
+                    } else if (!isPriceInEur && currency === 'EUR') {
+                        itemTotal /= eurRate;
+                    }
+
+                    subtotal += itemTotal;
+                    invoiceItems.push(`${itemName}: ${quantity} x ${itemPrice} = ${itemTotal.toFixed(0)} ${currency}`);
+                }
+            });
+
+            // Wellness
+            const wellness = parseFloat(document.getElementById('wellness').value) || 0;
+            if (wellness > 0) {
+                let wellnessCost = wellness;
+                if (currency === 'CZK') {
+                    wellnessCost *= eurRate;
+                }
+                subtotal += wellnessCost;
+                invoiceItems.push(`Wellness: ${wellness} € = ${wellnessCost.toFixed(0)} ${currency}`);
+            }
+
+            // Sleva
+            let discountAmount = 0;
+            if (applyDiscount) {
+                discountAmount = subtotal * 0.1;
+                invoiceItems.push(`Sleva (10%): -${discountAmount.toFixed(0)} ${currency}`);
+            }
+
+            // Celková cena
+            const finalTotal = totalCost + subtotal - discountAmount;
+
+            // Zobrazení faktury
+            document.getElementById('invoiceVila').textContent = `Vila: ${vila}`;
+            document.getElementById('invoiceDate').textContent = `Datum: ${invoiceDate}`;
+            document.getElementById('invoiceDetails').innerHTML = invoiceItems.map(item => `<p>${item}</p>`).join('');
+            document.getElementById('invoiceTotal').innerHTML = `
+                <p><strong>Mezisoučet (bez City Tax): ${subtotal.toFixed(0)} ${currency}</strong></p>
+                <p><strong>Celková částka: ${finalTotal.toFixed(0)} ${currency}</strong></p>
+            `;
+            
+            document.getElementById('invoice').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
