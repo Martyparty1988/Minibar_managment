@@ -47,55 +47,55 @@
             color: #333;
         }
 
-        .form-group input,
-        .form-group select {
-            flex: 2;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-            transition: all 0.3s;
-            font-size: 16px;
-        }
-
-        .slider-container {
+        .form-group .circular-picker {
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-        }
-
-        .slider-container input[type="range"] {
-            flex: 3;
-            -webkit-appearance: none;
-            height: 8px;
-            background: #ff4e50;
-            border-radius: 5px;
-            outline: none;
-            margin: 0;
-        }
-
-        .slider-container span {
-            flex: 1;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .form-group button {
-            width: 30px;
-            height: 30px;
-            background: #ff4e50;
-            border: none;
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border: 6px solid #ff4e50;
             border-radius: 50%;
+            background: white;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group .circular-picker span {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group .circular-picker button {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #ff4e50;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
+            transition: background 0.3s;
         }
 
-        .form-group button:hover {
+        .form-group .circular-picker button:hover {
             background: #d43f3c;
+        }
+
+        .form-group .circular-picker .plus {
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .form-group .circular-picker .minus {
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         button {
@@ -184,11 +184,6 @@
             </select>
         </div>
 
-        <div class="form-group">
-            <label for="eurRate">Kurz EUR/CZK:</label>
-            <input type="number" id="eurRate" value="24.50">
-        </div>
-
         <div id="items"></div>
 
         <button onclick="generateInvoice()">Generovat fakturu</button>
@@ -218,6 +213,15 @@
                 "Pivo sud 50 l (175 €)": 175,
                 "Plyn (12 €)": 12,
                 "Wellness (€)": 0
+            },
+            pool: {
+                "Budvar (59 Kč)": 59,
+                "Coca-Cola (32 Kč)": 32,
+                "Sprite (32 Kč)": 32,
+                "Red Bull (59 Kč)": 59,
+                "Malibu (99 Kč)": 99,
+                "Pivo sud 30 l (125 €)": 125,
+                "Plyn (12 €)": 12
             }
         };
 
@@ -231,17 +235,21 @@
                 container.innerHTML += `
                     <div class="form-group">
                         <label>${item}</label>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" step="1" value="0" oninput="updateValue('${item}', this.value)">
+                        <div class="circular-picker">
+                            <button class="minus" onclick="updateValue('${item}', -1)">-</button>
                             <span id="${item}-value">0</span>
+                            <button class="plus" onclick="updateValue('${item}', 1)">+</button>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function updateValue(item, value) {
-            document.getElementById(`${item}-value`).textContent = value;
+        function updateValue(item, delta) {
+            const valueElement = document.getElementById(`${item}-value`);
+            let value = parseInt(valueElement.textContent);
+            value = Math.max(0, value + delta);
+            valueElement.textContent = value;
         }
 
         window.onload = updateItems;
