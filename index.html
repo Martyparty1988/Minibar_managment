@@ -45,37 +45,8 @@
             margin-bottom: 5px;
         }
 
-        .cylinder {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            margin: 20px auto;
-            perspective: 1000px;
-        }
-
-        .cylinder-inner {
+        input[type="range"] {
             width: 100%;
-            height: 100%;
-            position: absolute;
-            transform-style: preserve-3d;
-            transform: rotateX(0deg);
-            transition: transform 0.5s ease;
-        }
-
-        .number {
-            position: absolute;
-            width: 150px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #4caf50;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            border: 1px solid #ddd;
-            box-sizing: border-box;
-            transform-origin: center;
         }
 
         button {
@@ -132,11 +103,6 @@
                 padding: 10px;
             }
 
-            .form-group {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
             button {
                 width: 100%;
             }
@@ -183,7 +149,7 @@
                 "Pivo sud 30 l (125 €)": 125,
                 "Pivo sud 50 l (175 €)": 175,
                 "Plyn (12 €)": 12,
-                "Wellness (€)": 0
+                "Wellness (€)": 150
             },
             castle: {
                 "Budvar (59 Kč)": 59,
@@ -196,7 +162,7 @@
                 "Pivo sud 30 l (125 €)": 125,
                 "Pivo sud 50 l (175 €)": 175,
                 "Plyn (12 €)": 12,
-                "Wellness (€)": 0
+                "Wellness (€)": 150
             },
             pool: {
                 "Budvar (59 Kč)": 59,
@@ -212,42 +178,9 @@
                 "Pivo sud 30 l (125 €)": 125,
                 "Pivo sud 50 l (175 €)": 175,
                 "Plyn (12 €)": 12,
-                "Wellness (€)": 0
+                "Wellness (€)": 150
             }
         };
-
-        function createCylinder(itemName) {
-            const cylinderContainer = document.createElement("div");
-            cylinderContainer.classList.add("cylinder");
-
-            const cylinderInner = document.createElement("div");
-            cylinderInner.classList.add("cylinder-inner");
-            cylinderInner.id = `${itemName}-cylinder`;
-
-            const cylinderRadius = 75;
-            for (let i = 0; i <= 20; i++) {
-                const angle = (i / 20) * 360;
-                const numberElement = document.createElement("div");
-                numberElement.classList.add("number");
-                numberElement.style.transform = `
-                    rotateX(${angle}deg) translateZ(${cylinderRadius}px)
-                `;
-                numberElement.textContent = i;
-                cylinderInner.appendChild(numberElement);
-            }
-
-            cylinderContainer.appendChild(cylinderInner);
-            cylinderContainer.addEventListener("click", () => rotateCylinder(itemName));
-            return cylinderContainer;
-        }
-
-        function rotateCylinder(itemName) {
-            const cylinder = document.getElementById(`${itemName}-cylinder`);
-            const currentRotation = parseInt(cylinder.dataset.rotation || "0", 10);
-            const newRotation = currentRotation + 18; // Otáčí o jednu hodnotu
-            cylinder.style.transform = `rotateX(${newRotation}deg)`;
-            cylinder.dataset.rotation = newRotation;
-        }
 
         function updateItems() {
             const vila = document.getElementById("vila").value;
@@ -262,16 +195,59 @@
                 const label = document.createElement("label");
                 label.textContent = itemName;
 
-                const cylinder = createCylinder(itemName);
+                const slider = document.createElement("input");
+                slider.type = "range";
+                slider.min = itemName === "Wellness (€)" ? 150 : 0;
+                slider.max = itemName === "Wellness (€)" ? 500 : 20;
+                slider.step = itemName === "Wellness (€)" ? 50 : 1;
+                slider.value = itemName === "Wellness (€)" ? 150 : 0;
+                slider.id = `${itemName}-count`;
+                slider.oninput = () => updateSliderLabel(itemName, slider.value);
+
+                const valueLabel = document.createElement("span");
+                valueLabel.id = `${itemName}-label`;
+                valueLabel.textContent = itemName === "Wellness (€)" ? "150 €" : "0";
 
                 formGroup.appendChild(label);
-                formGroup.appendChild(cylinder);
+                formGroup.appendChild(slider);
+                formGroup.appendChild(valueLabel);
                 container.appendChild(formGroup);
             });
         }
 
+        function updateSliderLabel(itemName, value) {
+            document.getElementById(`${itemName}-label`).textContent = itemName === "Wellness (€)" ? `${value} €` : value;
+        }
+
         function generateInvoice() {
-            alert("Generování faktury není v této ukázce implementováno.");
+            const vila = document.getElementById("vila").value;
+            const items = itemsData[vila];
+            const invoice = document.getElementById("invoice");
+            const invoiceDetails = document.getElementById("invoiceDetails");
+            const invoiceTotal = document.getElementById("invoiceTotal");
+
+            let total = 0;
+            let details = "";
+
+            Object.keys(items).forEach((itemName) => {
+                const count = parseInt(document.getElementById(`${itemName}-count`).value, 10);
+                const price = itemName === "Wellness (€)" ? count : items[itemName];
+                if (count > 0) {
+                    const itemTotal = itemName === "Wellness (€)" ? count : count * items[itemName];
+                    total += itemTotal;
+                    details += `<p>${itemName}: ${itemTotal} ${itemName === "Wellness (€)" ? "€" : "Kč"}</p>`;
+                }
+            });
+
+            if (total > 0) {
+                invoice.style.display = "block";
+                document.getElementById("invoiceVila").textContent = `Vila: ${vila}`;
+                document.getElementById("invoiceDate").textContent = `Datum: ${new Date().toLocaleDateString()}`;
+                invoiceDetails.innerHTML = details;
+                invoiceTotal.innerHTML = `<p>Celkem: ${total} ${total > 0 && items["Wellness (€)"] ? "€" : "Kč"}</p>`;
+            } else {
+                alert("Nevybrali jste žádné položky.");
+            }
         }
 
         window.onload = updateItems;
