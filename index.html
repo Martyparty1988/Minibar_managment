@@ -34,68 +34,48 @@
         }
 
         .form-group {
-            display: flex;
-            flex-wrap: wrap;
             margin-bottom: 15px;
-            align-items: center;
         }
 
         .form-group label {
-            flex: 1;
-            font-size: 14px;
+            display: block;
+            font-size: 16px;
             font-weight: bold;
             color: #333;
+            margin-bottom: 5px;
         }
 
-        .form-group .circular-picker {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .cylinder {
             position: relative;
             width: 150px;
             height: 150px;
-            border: 6px solid #ff4e50;
-            border-radius: 50%;
-            background: white;
             margin: 20px auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            perspective: 1000px;
         }
 
-        .form-group .circular-picker span {
+        .cylinder-inner {
+            width: 100%;
+            height: 100%;
             position: absolute;
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
+            transform-style: preserve-3d;
+            transform: rotateX(0deg);
+            transition: transform 0.5s ease;
         }
 
-        .form-group .circular-picker button {
+        .number {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: none;
-            background: #ff4e50;
+            width: 150px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #4caf50;
             color: white;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .form-group .circular-picker button:hover {
-            background: #d43f3c;
-        }
-
-        .form-group .circular-picker .plus {
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .form-group .circular-picker .minus {
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            transform-origin: center;
         }
 
         button {
@@ -157,15 +137,6 @@
                 align-items: flex-start;
             }
 
-            .form-group label {
-                margin-bottom: 5px;
-            }
-
-            .form-group input,
-            .form-group select {
-                width: 100%;
-            }
-
             button {
                 width: 100%;
             }
@@ -214,16 +185,69 @@
                 "Plyn (12 €)": 12,
                 "Wellness (€)": 0
             },
+            castle: {
+                "Budvar (59 Kč)": 59,
+                "Malibu (99 Kč)": 99,
+                "Jack s colou (99 Kč)": 99,
+                "Moscow Mule (99 Kč)": 99,
+                "Gin-Tonic (99 Kč)": 99,
+                "Mojito (99 Kč)": 99,
+                "Prosecco (390 Kč)": 390,
+                "Pivo sud 30 l (125 €)": 125,
+                "Pivo sud 50 l (175 €)": 175,
+                "Plyn (12 €)": 12,
+                "Wellness (€)": 0
+            },
             pool: {
                 "Budvar (59 Kč)": 59,
                 "Coca-Cola (32 Kč)": 32,
                 "Sprite (32 Kč)": 32,
                 "Red Bull (59 Kč)": 59,
                 "Malibu (99 Kč)": 99,
+                "Jack s colou (99 Kč)": 99,
+                "Moscow Mule (99 Kč)": 99,
+                "Gin-Tonic (99 Kč)": 99,
+                "Mojito (99 Kč)": 99,
+                "Prosecco (390 Kč)": 390,
                 "Pivo sud 30 l (125 €)": 125,
-                "Plyn (12 €)": 12
+                "Pivo sud 50 l (175 €)": 175,
+                "Plyn (12 €)": 12,
+                "Wellness (€)": 0
             }
         };
+
+        function createCylinder(itemName) {
+            const cylinderContainer = document.createElement("div");
+            cylinderContainer.classList.add("cylinder");
+
+            const cylinderInner = document.createElement("div");
+            cylinderInner.classList.add("cylinder-inner");
+            cylinderInner.id = `${itemName}-cylinder`;
+
+            const cylinderRadius = 75;
+            for (let i = 0; i <= 20; i++) {
+                const angle = (i / 20) * 360;
+                const numberElement = document.createElement("div");
+                numberElement.classList.add("number");
+                numberElement.style.transform = `
+                    rotateX(${angle}deg) translateZ(${cylinderRadius}px)
+                `;
+                numberElement.textContent = i;
+                cylinderInner.appendChild(numberElement);
+            }
+
+            cylinderContainer.appendChild(cylinderInner);
+            cylinderContainer.addEventListener("click", () => rotateCylinder(itemName));
+            return cylinderContainer;
+        }
+
+        function rotateCylinder(itemName) {
+            const cylinder = document.getElementById(`${itemName}-cylinder`);
+            const currentRotation = parseInt(cylinder.dataset.rotation || "0", 10);
+            const newRotation = currentRotation + 18; // Otáčí o jednu hodnotu
+            cylinder.style.transform = `rotateX(${newRotation}deg)`;
+            cylinder.dataset.rotation = newRotation;
+        }
 
         function updateItems() {
             const vila = document.getElementById("vila").value;
@@ -231,25 +255,23 @@
             const container = document.getElementById("items");
             container.innerHTML = "";
 
-            Object.keys(items).forEach((item) => {
-                container.innerHTML += `
-                    <div class="form-group">
-                        <label>${item}</label>
-                        <div class="circular-picker">
-                            <button class="minus" onclick="updateValue('${item}', -1)">-</button>
-                            <span id="${item}-value">0</span>
-                            <button class="plus" onclick="updateValue('${item}', 1)">+</button>
-                        </div>
-                    </div>
-                `;
+            Object.keys(items).forEach((itemName) => {
+                const formGroup = document.createElement("div");
+                formGroup.classList.add("form-group");
+
+                const label = document.createElement("label");
+                label.textContent = itemName;
+
+                const cylinder = createCylinder(itemName);
+
+                formGroup.appendChild(label);
+                formGroup.appendChild(cylinder);
+                container.appendChild(formGroup);
             });
         }
 
-        function updateValue(item, delta) {
-            const valueElement = document.getElementById(`${item}-value`);
-            let value = parseInt(valueElement.textContent);
-            value = Math.max(0, value + delta);
-            valueElement.textContent = value;
+        function generateInvoice() {
+            alert("Generování faktury není v této ukázce implementováno.");
         }
 
         window.onload = updateItems;
