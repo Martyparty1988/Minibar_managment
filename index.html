@@ -65,6 +65,12 @@
             transition: all 0.3s;
         }
 
+        .form-group input:hover,
+        .form-group select:hover {
+            border-color: #ff4e50;
+            background: rgba(255, 78, 80, 0.1);
+        }
+
         .form-group input:focus,
         .form-group select:focus {
             border-color: #ff4e50;
@@ -221,7 +227,7 @@
                 "Pivo sud 30 l": 125,
                 "Pivo sud 50 l": 175,
                 Plyn: 12,
-                Wellness: 0
+                Wellness: null // Cena zadaná uživatelem
             },
             castle: {
                 Budvar: 59,
@@ -234,7 +240,7 @@
                 "Pivo sud 30 l": 125,
                 "Pivo sud 50 l": 175,
                 Plyn: 12,
-                Wellness: 0
+                Wellness: null
             },
             pool: {
                 Budvar: 59,
@@ -250,7 +256,7 @@
                 "Pivo sud 30 l": 125,
                 "Pivo sud 50 l": 175,
                 Plyn: 12,
-                Wellness: 0
+                Wellness: null
             }
         };
 
@@ -262,11 +268,12 @@
 
             Object.keys(items).forEach(key => {
                 const price = items[key];
-                const isEuro = typeof price === 'number' && price > 100;
+                const isWellness = price === null;
+                const isEuro = !isWellness && price > 100;
                 itemsContainer.innerHTML += `
                     <div class="form-group">
-                        <label>${key} (${isEuro ? price + ' €' : price + ' Kč'}):</label>
-                        <input type="number" id="${key.replace(/\s/g, '')}" min="0" value="0">
+                        <label>${key} (${isWellness ? 'Cena (€)' : (isEuro ? price + ' €' : price + ' Kč')}):</label>
+                        <input type="number" id="${key.replace(/\s/g, '')}" min="0" value="0" step="${isWellness ? '1' : '1'}">
                     </div>
                 `;
             });
@@ -288,13 +295,17 @@
             let subtotal = 0;
 
             Object.keys(items).forEach(key => {
-                const quantity = parseInt(document.getElementById(key.replace(/\s/g, '')).value) || 0;
+                const quantity = parseFloat(document.getElementById(key.replace(/\s/g, '')).value) || 0;
+                const price = items[key];
+
                 if (quantity > 0) {
-                    const price = items[key];
-                    const isEuro = typeof price === 'number' && price > 100;
-                    const itemCost = isEuro ? price * quantity : (price * quantity) / eurRate;
+                    const isWellness = price === null;
+                    const itemCost = isWellness
+                        ? quantity * (currency === 'EUR' ? 1 : eurRate)
+                        : (price * quantity) / (currency === 'CZK' ? 1 : eurRate);
+
                     subtotal += itemCost;
-                    invoiceItems.push(`${key}: ${quantity} x ${price}${isEuro ? ' €' : ' Kč'} = ${itemCost.toFixed(2)} ${currency}`);
+                    invoiceItems.push(`${key}: ${quantity} x ${isWellness ? quantity : price}${isWellness ? '' : (currency === 'CZK' ? ' Kč' : ' €')} = ${itemCost.toFixed(2)} ${currency}`);
                 }
             });
 
