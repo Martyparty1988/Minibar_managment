@@ -56,10 +56,6 @@
             box-sizing: border-box;
         }
 
-        input[type="range"] {
-            width: 100%;
-        }
-
         button {
             display: block;
             width: 100%;
@@ -181,8 +177,8 @@
                 "Plyn (12 €)": 12,
                 "Wellness (€)": 150
             },
-            castle: { /* stejné položky */ },
-            pool: { /* stejné položky */ }
+            castle: { /* Stejné položky jako ohyeah */ },
+            pool: { /* Stejné položky jako ohyeah */ }
         };
 
         function updateItems() {
@@ -198,28 +194,16 @@
                 const label = document.createElement("label");
                 label.textContent = itemName;
 
-                const slider = document.createElement("input");
-                slider.type = "range";
-                slider.min = itemName === "Wellness (€)" ? 150 : 0;
-                slider.max = itemName === "Wellness (€)" ? 500 : 20;
-                slider.step = itemName === "Wellness (€)" ? 50 : 1;
-                slider.value = itemName === "Wellness (€)" ? 150 : 0;
-                slider.id = `${itemName}-count`;
-                slider.oninput = () => updateSliderLabel(itemName, slider.value);
-
-                const valueLabel = document.createElement("span");
-                valueLabel.id = `${itemName}-label`;
-                valueLabel.textContent = itemName === "Wellness (€)" ? "150 €" : "0";
+                const input = document.createElement("input");
+                input.type = "number";
+                input.min = "0";
+                input.value = "0";
+                input.id = `${itemName}-count`;
 
                 formGroup.appendChild(label);
-                formGroup.appendChild(slider);
-                formGroup.appendChild(valueLabel);
+                formGroup.appendChild(input);
                 container.appendChild(formGroup);
             });
-        }
-
-        function updateSliderLabel(itemName, value) {
-            document.getElementById(`${itemName}-label`).textContent = itemName === "Wellness (€)" ? `${value} €` : value;
         }
 
         function generateInvoice() {
@@ -233,36 +217,40 @@
             const invoiceDetails = document.getElementById("invoiceDetails");
             const invoiceTotal = document.getElementById("invoiceTotal");
 
-            let total = 0;
+            let subtotal = 0; // Mezisoučet bez City Tax
             let details = "";
 
+            // Výpočet položek minibarů
             Object.keys(items).forEach((itemName) => {
                 const count = parseInt(document.getElementById(`${itemName}-count`).value, 10);
-                const price = itemName === "Wellness (€)" ? count : items[itemName];
                 if (count > 0) {
-                    const itemTotal = itemName === "Wellness (€)" ? count : count * items[itemName];
-                    total += itemTotal;
-                    details += `<p>${itemName}: ${itemTotal} ${itemName === "Wellness (€)" ? "€" : "Kč"}</p>`;
+                    const itemTotal = count * items[itemName];
+                    subtotal += itemTotal;
+                    details += `<p>${itemName}: ${itemTotal} ${itemName.includes("€") ? "€" : "Kč"}</p>`;
                 }
             });
 
             // City Tax
-            const cityTax = guests * nights * 2;
-            total += cityTax;
-            details += `<p>City Tax: ${cityTax} €</p>`;
+            const cityTax = guests * nights * 2; // Počet hostů × Počet nocí × 2 €
+            details += `<p>City Tax: ${cityTax.toFixed(2)} €</p>`;
 
-            // Apply discount
+            // Sleva
+            let discountAmount = 0;
             if (discount) {
-                const discountAmount = (total - cityTax) * 0.1;
-                total -= discountAmount;
-                details += `<p>Sleva 10%: -${discountAmount.toFixed(2)} €</p>`;
+                discountAmount = subtotal * 0.1; // 10% sleva
+                subtotal -= discountAmount;
+                details += `<p>Sleva 10%: -${discountAmount.toFixed(2)} ${"Kč/€"}</p>`;
             }
 
+            // Celkový součet
+            const finalTotal = subtotal + cityTax;
+
+            // Zobrazení faktury
             invoice.style.display = "block";
             document.getElementById("invoiceVila").textContent = `Vila: ${vila}`;
             document.getElementById("invoiceDate").textContent = `Datum: ${new Date().toLocaleDateString()}`;
             invoiceDetails.innerHTML = details;
-            invoiceTotal.innerHTML = `<p>Celkem: ${total.toFixed(2)} €</p>`;
+            invoiceTotal.innerHTML = `<p>Celkem: ${finalTotal.toFixed(2)} €</p>`;
         }
 
         window.onload = updateItems;
