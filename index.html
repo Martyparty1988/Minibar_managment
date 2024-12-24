@@ -58,31 +58,44 @@
             font-size: 16px;
         }
 
-        .form-group input[type="range"] {
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 3;
             -webkit-appearance: none;
-            width: 100%;
-            margin: 0;
-            background: transparent;
-        }
-
-        .form-group input[type="range"]:focus {
-            outline: none;
-        }
-
-        .form-group input[type="range"]::-webkit-slider-runnable-track {
             height: 8px;
             background: #ff4e50;
-            border-radius: 4px;
+            border-radius: 5px;
+            outline: none;
+            margin: 0;
         }
 
-        .form-group input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 20px;
-            width: 20px;
+        .slider-container span {
+            flex: 1;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .form-group button {
+            width: 30px;
+            height: 30px;
+            background: #ff4e50;
+            border: none;
             border-radius: 50%;
-            background: #d43f3c;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
-            margin-top: -6px;
+        }
+
+        .form-group button:hover {
+            background: #d43f3c;
         }
 
         button {
@@ -172,35 +185,10 @@
         </div>
 
         <div class="form-group">
-            <label for="guests">Počet hostů:</label>
-            <input type="number" id="guests" value="1" min="1">
-        </div>
-        <div class="form-group">
-            <label for="nights">Počet nocí:</label>
-            <input type="number" id="nights" value="1" min="1">
-        </div>
-
-        <div class="form-group">
-            <label for="currency">Platba v:</label>
-            <select id="currency">
-                <option value="CZK">Koruny (CZK)</option>
-                <option value="EUR">Eura (€)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
             <label for="eurRate">Kurz EUR/CZK:</label>
-            <input type="number" id="eurRate" value="Načítání..." readonly>
+            <input type="number" id="eurRate" value="24.50">
         </div>
 
-        <div class="form-group">
-            <label>
-                <input type="checkbox" id="applyDiscount"> 
-                Sleva 10 % (mimo City Tax)
-            </label>
-        </div>
-
-        <h2>Položky</h2>
         <div id="items"></div>
 
         <button onclick="generateInvoice()">Generovat fakturu</button>
@@ -217,145 +205,46 @@
     </div>
 
     <script>
-        let eurRate = 24.5; // Výchozí hodnota kurzu
-
         const itemsData = {
             ohyeah: {
-                Budvar: 59,
-                Malibu: 99,
-                "Jack s colou": 99,
-                "Moscow Mule": 99,
-                "Gin-Tonic": 99,
-                Mojito: 99,
-                Prosecco: 390,
-                "Pivo sud 30 l": 125,
-                "Pivo sud 50 l": 175,
-                Plyn: 12,
-                Wellness: 0
-            },
-            castle: {
-                Budvar: 59,
-                Malibu: 99,
-                "Jack s colou": 99,
-                "Moscow Mule": 99,
-                "Gin-Tonic": 99,
-                Mojito: 99,
-                Prosecco: 390,
-                "Pivo sud 30 l": 125,
-                "Pivo sud 50 l": 175,
-                Plyn: 12,
-                Wellness: 0
-            },
-            pool: {
-                Budvar: 59,
-                Malibu: 99,
-                "Jack s colou": 99,
-                "Moscow Mule": 99,
-                "Gin-Tonic": 99,
-                Mojito: 99,
-                "Coca-Cola": 32,
-                Sprite: 32,
-                "Red Bull": 59,
-                Prosecco: 390,
-                "Pivo sud 30 l": 125,
-                "Pivo sud 50 l": 175,
-                Plyn: 12,
-                Wellness: 0
+                "Budvar (59 Kč)": 59,
+                "Malibu (99 Kč)": 99,
+                "Jack s colou (99 Kč)": 99,
+                "Moscow Mule (99 Kč)": 99,
+                "Gin-Tonic (99 Kč)": 99,
+                "Mojito (99 Kč)": 99,
+                "Prosecco (390 Kč)": 390,
+                "Pivo sud 30 l (125 €)": 125,
+                "Pivo sud 50 l (175 €)": 175,
+                "Plyn (12 €)": 12,
+                "Wellness (€)": 0
             }
         };
 
-        async function fetchExchangeRate() {
-            try {
-                const response = await fetch('https://api.exchangerate.host/latest?base=EUR&symbols=CZK');
-                const data = await response.json();
-                eurRate = data.rates.CZK;
-                document.getElementById('eurRate').value = eurRate.toFixed(2);
-            } catch (error) {
-                alert("Nepodařilo se načíst aktuální kurz. Používá se výchozí hodnota.");
-                document.getElementById('eurRate').value = eurRate.toFixed(2);
-            }
-        }
-
         function updateItems() {
-            const vila = document.getElementById('vila').value;
+            const vila = document.getElementById("vila").value;
             const items = itemsData[vila];
-            const itemsContainer = document.getElementById('items');
-            itemsContainer.innerHTML = '';
+            const container = document.getElementById("items");
+            container.innerHTML = "";
 
-            Object.keys(items).forEach(key => {
-                const isEuro = typeof items[key] === 'number' && items[key] > 100;
-                itemsContainer.innerHTML += `
+            Object.keys(items).forEach((item) => {
+                container.innerHTML += `
                     <div class="form-group">
-                        <label>${key} (${isEuro ? items[key] + ' €' : items[key] + ' Kč'}):</label>
-                        <input type="range" id="${key.replace(/\s/g, '')}" min="0" max="10" step="1" value="0" oninput="showValue(this, '${key.replace(/\s/g, '')}')">
-                        <span id="${key.replace(/\s/g, '')}Value">0</span>
+                        <label>${item}</label>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" step="1" value="0" oninput="updateValue('${item}', this.value)">
+                            <span id="${item}-value">0</span>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        function showValue(slider, id) {
-            document.getElementById(id + "Value").textContent = slider.value;
+        function updateValue(item, value) {
+            document.getElementById(`${item}-value`).textContent = value;
         }
 
-        function generateInvoice() {
-            const vila = document.getElementById('vila').value;
-            const guests = parseInt(document.getElementById('guests').value);
-            const nights = parseInt(document.getElementById('nights').value);
-            const currency = document.getElementById('currency').value;
-            const discount = document.getElementById('applyDiscount').checked;
-
-            let cityTax = 2 * guests * nights; // Always in €
-            if (currency === 'CZK') {
-                cityTax *= eurRate;
-            }
-
-            let totalCost = cityTax;
-            const invoiceItems = [`City Tax: ${cityTax.toFixed(2)} ${currency}`];
-
-            const items = itemsData[vila];
-            let subtotal = 0;
-
-            Object.keys(items).forEach(key => {
-                const quantity = parseInt(document.getElementById(key.replace(/\s/g, '')).value) || 0;
-                if (quantity > 0) {
-                    let itemPrice = items[key];
-                    const isEuro = typeof itemPrice === 'number' && itemPrice > 100;
-
-                    if (isEuro) {
-                        if (currency === 'CZK') {
-                            itemPrice *= eurRate; // Convert to CZK
-                        }
-                    } else {
-                        if (currency === 'EUR') {
-                            itemPrice /= eurRate; // Convert to EUR
-                        }
-                    }
-
-                    const itemTotal = quantity * itemPrice;
-                    subtotal += itemTotal;
-                    invoiceItems.push(`${key}: ${quantity} x ${itemPrice.toFixed(2)} ${currency} = ${itemTotal.toFixed(2)} ${currency}`);
-                }
-            });
-
-            if (discount) {
-                const discountAmount = subtotal * 0.1;
-                subtotal -= discountAmount;
-                invoiceItems.push(`Sleva (10 %): -${discountAmount.toFixed(2)} ${currency}`);
-            }
-
-            totalCost += subtotal;
-
-            document.getElementById('invoiceVila').textContent = vila;
-            document.getElementById('invoiceDetails').innerHTML = invoiceItems.map(item => `<p>${item}</p>`).join('');
-            document.getElementById('invoiceTotal').innerHTML = `<p><strong>Celková částka: ${totalCost.toFixed(2)} ${currency}</strong></p>`;
-            document.getElementById('invoice').style.display = 'block';
-        }
-
-        window.onload = () => {
-            fetchExchangeRate();
-            updateItems();
-        };
+        window.onload = updateItems;
     </script>
 </body>
 </html>
