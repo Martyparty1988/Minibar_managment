@@ -67,9 +67,11 @@
             transition: all 0.3s;
         }
 
-        .form-group input:hover {
+        .form-group input[type="number"]:hover {
+            background-color: #fff5f5;
             border-color: #ff4e50;
             box-shadow: 0 0 6px rgba(255, 78, 80, 0.5);
+            transform: scale(1.05);
         }
 
         .form-group input:focus,
@@ -156,7 +158,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 id="title">Mini Bar Management</h1>
+        <h1>Mini Bar Management</h1>
         <div class="form-group">
             <label for="vila">Výběr vily:</label>
             <select id="vila" onchange="updateItems()">
@@ -217,9 +219,48 @@
     <script>
         let eurRate = 24.5; // Defaultní hodnota kurzu
         const itemsData = {
-            ohyeah: { Budvar: 59, Malibu: 99, Mojito: 99, "Wellness (€)": 0 },
-            castle: { Budvar: 59, Prosecco: 390, "Pivo sud 30 l (€)": 125 },
-            pool: { CocaCola: 32, Sprite: 32, "Red Bull": 59, Malibu: 99 },
+            ohyeah: {
+                Budvar: 59,
+                Malibu: 99,
+                "Jack s colou": 99,
+                "Moscow Mule": 99,
+                "Gin-Tonic": 99,
+                Mojito: 99,
+                Prosecco: 390,
+                "Pivo sud 30 l (€)": 125,
+                "Pivo sud 50 l (€)": 175,
+                Plyn: 12,
+                Wellness: 0,
+            },
+            castle: {
+                Budvar: 59,
+                Malibu: 99,
+                "Jack s colou": 99,
+                "Moscow Mule": 99,
+                "Gin-Tonic": 99,
+                Mojito: 99,
+                Prosecco: 390,
+                "Pivo sud 30 l (€)": 125,
+                "Pivo sud 50 l (€)": 175,
+                Plyn: 12,
+                Wellness: 0,
+            },
+            pool: {
+                Budvar: 59,
+                Malibu: 99,
+                "Jack s colou": 99,
+                "Moscow Mule": 99,
+                "Gin-Tonic": 99,
+                Mojito: 99,
+                CocaCola: 32,
+                Sprite: 32,
+                "Red Bull": 59,
+                Prosecco: 390,
+                "Pivo sud 30 l (€)": 125,
+                "Pivo sud 50 l (€)": 175,
+                Plyn: 12,
+                Wellness: 0,
+            },
         };
 
         async function fetchExchangeRate() {
