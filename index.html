@@ -58,36 +58,48 @@
             font-size: 16px;
         }
 
-        .form-group input[type="number"] {
-            appearance: textfield;
-            width: 100%;
-            text-align: center;
+        .form-group input:hover {
+            border-color: #ff4e50;
+            box-shadow: 0 0 6px rgba(255, 78, 80, 0.5);
         }
 
-        .spinner {
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #ff4e50;
+            box-shadow: 0 0 6px rgba(255, 78, 80, 0.5);
+        }
+
+        .quantity-input {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            max-width: 120px;
+            margin: 0 auto;
+            position: relative;
         }
 
-        .spinner button {
-            width: 30px;
-            height: 30px;
-            border: none;
+        .quantity-input button {
             background: #ff4e50;
             color: white;
-            border-radius: 50%;
-            font-size: 18px;
+            border: none;
+            padding: 5px 10px;
+            font-size: 16px;
+            border-radius: 5px;
             cursor: pointer;
-            margin: 0 5px;
+            transition: transform 0.2s ease-in-out;
         }
 
-        .spinner input {
+        .quantity-input button:hover {
+            transform: rotate(360deg);
+        }
+
+        .quantity-input input {
             width: 50px;
             text-align: center;
             font-size: 16px;
             border: 1px solid #ddd;
-            border-radius: 8px;
-            margin: 0;
+            border-radius: 5px;
+            margin: 0 5px;
         }
 
         button {
@@ -225,27 +237,9 @@
         let eurRate = 24.5; // Výchozí hodnota kurzu
 
         const itemsData = {
-            ohyeah: {
-                Budvar: 59,
-                Malibu: 99,
-                Mojito: 99,
-                Wellness: 0,
-                Plyn: 12 // v €
-            },
-            castle: {
-                Budvar: 59,
-                Prosecco: 390,
-                "Pivo sud 30 l": 125, // v €
-                "Pivo sud 50 l": 175 // v €
-            },
-            pool: {
-                CocaCola: 32,
-                Sprite: 32,
-                "Red Bull": 59,
-                Malibu: 99,
-                "Pivo sud 30 l": 125, // v €
-                "Pivo sud 50 l": 175 // v €
-            }
+            ohyeah: { Budvar: 59, Malibu: 99, Mojito: 99, Wellness: 0, Plyn: 12 },
+            castle: { Budvar: 59, Prosecco: 390, "Pivo sud 30 l": 125, "Pivo sud 50 l": 175 },
+            pool: { CocaCola: 32, Sprite: 32, "Red Bull": 59, Malibu: 99, "Pivo sud 30 l": 125 }
         };
 
         async function fetchExchangeRate() {
@@ -254,9 +248,8 @@
                 const data = await response.json();
                 eurRate = data.rates.CZK;
                 document.getElementById('eurRate').value = eurRate.toFixed(2);
-            } catch (error) {
+            } catch {
                 alert("Nepodařilo se načíst aktuální kurz. Používá se výchozí hodnota.");
-                document.getElementById('eurRate').value = eurRate.toFixed(2);
             }
         }
 
@@ -264,25 +257,28 @@
             const vila = document.getElementById('vila').value;
             const itemsContainer = document.getElementById('items');
             itemsContainer.innerHTML = '';
-
             const items = itemsData[vila];
-            Object.keys(items).forEach(key => {
-                const isEuro = typeof items[key] === 'number' && items[key] > 100;
+
+            Object.keys(items).forEach(item => {
                 itemsContainer.innerHTML += `
-                    <div class="form-group spinner">
-                        <label>${key} (${isEuro ? items[key] + ' €' : items[key] + ' Kč'}):</label>
-                        <button onclick="adjustQuantity('${key}', -1)">-</button>
-                        <input type="number" id="${key.replace(/\s/g, '')}" min="0" value="0" readonly>
-                        <button onclick="adjustQuantity('${key}', 1)">+</button>
+                    <div class="form-group">
+                        <label>${item} (${items[item] > 100 ? '€' : 'Kč'}):</label>
+                        <div class="quantity-input">
+                            <button onclick="changeQuantity('${item}', -1)">-</button>
+                            <input type="number" id="${item.replace(/\s/g, '')}" value="0" readonly>
+                            <button onclick="changeQuantity('${item}', 1)">+</button>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        function adjustQuantity(item, adjustment) {
+        function changeQuantity(item, change) {
             const input = document.getElementById(item.replace(/\s/g, ''));
-            const currentValue = parseInt(input.value) || 0;
-            input.value = Math.max(0, currentValue + adjustment);
+            let value = parseInt(input.value) || 0;
+            value += change;
+            if (value < 0) value = 0;
+            input.value = value;
         }
 
         function generateInvoice() {
@@ -292,50 +288,31 @@
             const currency = document.getElementById('currency').value;
             const discount = document.getElementById('applyDiscount').checked;
 
-            let cityTax = 2 * guests * nights; // Always in €
-            if (currency === 'CZK') {
-                cityTax *= eurRate;
-            }
+            let cityTax = 2 * guests * nights;
+            if (currency === 'CZK') cityTax *= eurRate;
 
             let totalCost = cityTax;
             const invoiceItems = [`City Tax: ${cityTax.toFixed(2)} ${currency}`];
 
             const items = itemsData[vila];
-            let subtotal = 0;
-
-            Object.keys(items).forEach(key => {
-                const quantity = parseInt(document.getElementById(key.replace(/\s/g, '')).value) || 0;
+            Object.keys(items).forEach(item => {
+                const quantity = parseInt(document.getElementById(item.replace(/\s/g, '')).value) || 0;
                 if (quantity > 0) {
-                    let itemPrice = items[key];
-                    const isEuro = typeof itemPrice === 'number' && itemPrice > 100;
+                    let price = items[item];
+                    if (currency === 'CZK' && price > 100) price *= eurRate;
+                    if (currency === 'EUR' && price < 100) price /= eurRate;
 
-                    if (isEuro) {
-                        if (currency === 'CZK') {
-                            itemPrice *= eurRate; // Convert to CZK
-                        }
-                    } else {
-                        if (currency === 'EUR') {
-                            itemPrice /= eurRate; // Convert to EUR
-                        }
-                    }
-
-                    const itemTotal = quantity * itemPrice;
-                    subtotal += itemTotal;
-                    invoiceItems.push(`${key}: ${quantity} x ${itemPrice.toFixed(2)} ${currency} = ${itemTotal.toFixed(2)} ${currency}`);
+                    const itemCost = quantity * price;
+                    totalCost += itemCost;
+                    invoiceItems.push(`${item}: ${quantity} x ${price.toFixed(2)} ${currency} = ${itemCost.toFixed(2)} ${currency}`);
                 }
             });
 
-            if (discount) {
-                const discountAmount = subtotal * 0.1;
-                subtotal -= discountAmount;
-                invoiceItems.push(`Sleva (10 %): -${discountAmount.toFixed(2)} ${currency}`);
-            }
-
-            totalCost += subtotal;
+            if (discount) totalCost *= 0.9;
 
             document.getElementById('invoiceVila').textContent = vila;
-            document.getElementById('invoiceDetails').innerHTML = invoiceItems.map(item => `<p>${item}</p>`).join('');
-            document.getElementById('invoiceTotal').innerHTML = `<p><strong>Celková částka: ${totalCost.toFixed(2)} ${currency}</strong></p>`;
+            document.getElementById('invoiceDetails').innerHTML = invoiceItems.map(i => `<p>${i}</p>`).join('');
+            document.getElementById('invoiceTotal').innerHTML = `<p><strong>Celkem: ${totalCost.toFixed(2)} ${currency}</strong></p>`;
             document.getElementById('invoice').style.display = 'block';
         }
 
