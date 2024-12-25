@@ -21,16 +21,17 @@
             border-radius: 16px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            padding: 15px;
+            padding: 20px;
             box-sizing: border-box;
         }
 
         h1 {
             text-align: center;
             color: #ff4e50;
-            font-size: 22px;
+            font-size: 24px;
             text-transform: uppercase;
-            letter-spacing: 1.2px;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
         }
 
         .form-group {
@@ -38,19 +39,25 @@
         }
 
         .form-group label {
-            display: block;
-            font-size: 14px;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        .form-group label img {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            font-size: 14px;
-            padding: 8px;
-            margin-bottom: 10px;
+            font-size: 16px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-sizing: border-box;
@@ -60,18 +67,18 @@
             display: block;
             width: 100%;
             max-width: 320px;
-            margin: 15px auto;
-            padding: 12px;
+            margin: 20px auto;
+            padding: 15px;
             background: #ff4e50;
             color: white;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             text-transform: uppercase;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         button:hover {
@@ -80,48 +87,59 @@
 
         .invoice {
             background-color: #f7f7f7;
-            padding: 15px;
-            margin-top: 15px;
+            padding: 20px;
+            margin-top: 20px;
             border-radius: 12px;
             border: 1px solid #ddd;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            font-size: 14px;
+            font-size: 16px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .invoice.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .invoice-header h2 {
             color: #ff4e50;
             margin-bottom: 10px;
-            font-size: 18px;
+            font-size: 20px;
             text-align: center;
         }
 
         .invoice-details p {
             margin: 5px 0;
             color: #555;
+            font-size: 16px;
         }
 
         .invoice-total p {
             font-weight: bold;
             color: #ff4e50;
+            font-size: 18px;
         }
 
         @media (max-width: 480px) {
             .container {
-                padding: 10px;
+                padding: 15px;
             }
 
             h1 {
-                font-size: 20px;
+                font-size: 22px;
             }
 
             button {
-                font-size: 14px;
+                font-size: 16px;
+                padding: 12px;
             }
 
             .form-group input,
             .form-group select {
-                font-size: 12px;
-                padding: 6px;
+                font-size: 14px;
+                padding: 8px;
             }
         }
     </style>
@@ -142,22 +160,22 @@
 
         <div class="form-group">
             <label for="guests">Počet hostů:</label>
-            <input type="number" id="guests" min="1" value="1">
+            <input type="number" id="guests" min="1" value="1" oninput="updateInvoice()">
         </div>
 
         <div class="form-group">
             <label for="nights">Počet nocí:</label>
-            <input type="number" id="nights" min="1" value="1">
+            <input type="number" id="nights" min="1" value="1" oninput="updateInvoice()">
         </div>
 
         <div class="form-group">
             <label for="discount">Uplatnit slevu 10%:</label>
-            <input type="checkbox" id="discount">
+            <input type="checkbox" id="discount" onchange="updateInvoice()">
         </div>
 
-        <button onclick="generateInvoice()">Generovat fakturu</button>
+        <button onclick="updateInvoice()">Aktualizovat fakturu</button>
 
-        <div id="invoice" class="invoice" style="display: none;">
+        <div id="invoice" class="invoice">
             <div class="invoice-header">
                 <h2>Faktura</h2>
                 <p id="invoiceVila"></p>
@@ -182,35 +200,6 @@
                 "Pivo sud 50 l (175 €)": 175,
                 "Plyn (12 €)": 12,
                 "Wellness (€)": 150
-            },
-            castle: {
-                "Budvar (59 Kč)": 59,
-                "Malibu (99 Kč)": 99,
-                "Jack s colou (99 Kč)": 99,
-                "Moscow Mule (99 Kč)": 99,
-                "Gin-Tonic (99 Kč)": 99,
-                "Mojito (99 Kč)": 99,
-                "Prosecco (390 Kč)": 390,
-                "Pivo sud 30 l (125 €)": 125,
-                "Pivo sud 50 l (175 €)": 175,
-                "Plyn (12 €)": 12,
-                "Wellness (€)": 150
-            },
-            pool: {
-                "Budvar (59 Kč)": 59,
-                "Coca-Cola (32 Kč)": 32,
-                "Sprite (32 Kč)": 32,
-                "Red Bull (59 Kč)": 59,
-                "Malibu (99 Kč)": 99,
-                "Jack s colou (99 Kč)": 99,
-                "Moscow Mule (99 Kč)": 99,
-                "Gin-Tonic (99 Kč)": 99,
-                "Mojito (99 Kč)": 99,
-                "Prosecco (390 Kč)": 390,
-                "Pivo sud 30 l (125 €)": 125,
-                "Pivo sud 50 l (175 €)": 175,
-                "Plyn (12 €)": 12,
-                "Wellness (€)": 150
             }
         };
 
@@ -225,13 +214,17 @@
                 formGroup.classList.add("form-group");
 
                 const label = document.createElement("label");
-                label.textContent = itemName;
+                const icon = document.createElement("img");
+                icon.src = "https://via.placeholder.com/24"; // Změňte na správnou URL ikony
+                label.appendChild(icon);
+                label.appendChild(document.createTextNode(itemName));
 
                 const input = document.createElement("input");
                 input.type = "number";
                 input.min = "0";
                 input.value = "0";
                 input.id = `${itemName}-count`;
+                input.oninput = updateInvoice;
 
                 formGroup.appendChild(label);
                 formGroup.appendChild(input);
@@ -239,7 +232,7 @@
             });
         }
 
-        function generateInvoice() {
+        function updateInvoice() {
             const vila = document.getElementById("vila").value;
             const guests = parseInt(document.getElementById("guests").value, 10);
             const nights = parseInt(document.getElementById("nights").value, 10);
@@ -253,9 +246,8 @@
             let subtotal = 0;
             let details = "";
 
-            // Výpočet minibar položek
             Object.keys(items).forEach((itemName) => {
-                const count = parseInt(document.getElementById(`${itemName}-count`).value, 10);
+                const count = parseInt(document.getElementById(`${itemName}-count`).value, 10) || 0;
                 if (count > 0) {
                     const itemTotal = count * items[itemName];
                     subtotal += itemTotal;
@@ -263,11 +255,9 @@
                 }
             });
 
-            // City Tax
             const cityTax = guests * nights * 2;
             details += `<p>City Tax: ${cityTax.toFixed(2)} €</p>`;
 
-            // Sleva
             let discountAmount = 0;
             if (discount) {
                 discountAmount = subtotal * 0.1;
@@ -275,11 +265,9 @@
                 details += `<p>Sleva 10%: -${discountAmount.toFixed(2)} Kč</p>`;
             }
 
-            // Celkový součet
             const finalTotal = subtotal + cityTax;
 
-            // Zobrazení faktury
-            invoice.style.display = "block";
+            invoice.classList.add("active");
             document.getElementById("invoiceVila").textContent = `Vila: ${vila}`;
             document.getElementById("invoiceDate").textContent = `Datum: ${new Date().toLocaleDateString()}`;
             invoiceDetails.innerHTML = details;
