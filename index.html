@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini Bar Management</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -164,6 +165,8 @@
 
         <button onclick="generateInvoice()">Generovat fakturu</button>
 
+        <button onclick="downloadInvoice()">Stáhnout fakturu jako obrázek</button>
+
         <div id="invoice" class="invoice" style="display: none;">
             <div class="invoice-header">
                 <h2>Faktura</h2>
@@ -176,6 +179,7 @@
     </div>
 
     <script>
+        const exchangeRate = 25; // 1 € = 25 Kč
         const itemsData = {
             ohyeah: {
                 "Budvar (59 Kč)": 59,
@@ -226,7 +230,6 @@
 
             document.body.className = vila;
             document.getElementById("villa-name").textContent = villaNames[vila];
-
             updateItems(vila);
         }
 
@@ -268,36 +271,50 @@
             const invoiceTotal = document.getElementById("invoiceTotal");
 
             let subtotal = wellness;
-            let details = `<p>Wellness: ${currency === "eur" ? wellness.toFixed(2) : (wellness * 25).toFixed(2)} ${currency}</p>`;
+            let details = `<p>Wellness: ${currency === "eur" ? wellness.toFixed(2) : (wellness * exchangeRate).toFixed(2)} ${currency}</p>`;
 
             Object.keys(items).forEach((itemName) => {
                 const count = parseInt(document.getElementById(`${itemName}-count`).value, 10) || 0;
                 if (count > 0) {
                     const price = items[itemName];
-                    const itemTotal = count * price;
-                    subtotal += itemTotal;
+                    const itemTotal = itemName.includes("€")
+                        ? count * price * (currency === "czk" ? exchangeRate : 1)
+                        : count * price * (currency === "eur" ? 1 / exchangeRate : 1);
 
-                    details += `<p>${itemName}: ${currency === "eur" ? (itemTotal / 25).toFixed(2) : itemTotal} ${currency}</p>`;
+                    subtotal += itemTotal;
+                    details += `<p>${itemName}: ${itemTotal.toFixed(2)} ${currency}</p>`;
                 }
             });
 
             const cityTax = guests * nights * 2; // 2 € na osobu a den
-            details += `<p>City tax: ${currency === "eur" ? cityTax.toFixed(2) : (cityTax * 25).toFixed(2)} ${currency}</p>`;
+            const cityTaxConverted = currency === "eur" ? cityTax : cityTax * exchangeRate;
+
+            details += `<p>City tax: ${cityTaxConverted.toFixed(2)} ${currency}</p>`;
 
             let discountAmount = 0;
             if (discount) {
                 discountAmount = subtotal * 0.1;
                 subtotal -= discountAmount;
-                details += `<p>Discount 10%: -${currency === "eur" ? (discountAmount / 25).toFixed(2) : discountAmount.toFixed(2)} ${currency}</p>`;
+                details += `<p>Discount 10%: -${discountAmount.toFixed(2)} ${currency}</p>`;
             }
 
-            const finalTotal = subtotal + (currency === "eur" ? cityTax : cityTax * 25);
+            const finalTotal = subtotal + cityTaxConverted;
 
             invoice.style.display = "block";
             document.getElementById("invoiceVila").textContent = `Villa: ${document.getElementById("villa-name").textContent}`;
             document.getElementById("invoiceDate").textContent = `Date: ${new Date().toLocaleDateString("cs-CZ")}`;
             invoiceDetails.innerHTML = details;
             invoiceTotal.innerHTML = `<p>Total: ${finalTotal.toFixed(2)} ${currency}</p>`;
+        }
+
+        function downloadInvoice() {
+            const invoice = document.getElementById("invoice");
+            html2canvas(invoice).then(canvas => {
+                const link = document.createElement("a");
+                link.download = "faktura.png";
+                link.href = canvas.toDataURL();
+                link.click();
+            });
         }
 
         window.onload = updateVilla;
