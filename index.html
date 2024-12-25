@@ -268,8 +268,8 @@
             const invoiceDetails = document.getElementById("invoiceDetails");
             const invoiceTotal = document.getElementById("invoiceTotal");
 
-            let subtotal = 0;
-            let details = "";
+            let subtotal = wellness;
+            let details = `<p>Wellness: ${currency === "eur" ? wellness.toFixed(2) : (wellness * 25).toFixed(2)} ${currency}</p>`;
 
             Object.keys(items).forEach((itemName) => {
                 const count = parseInt(document.getElementById(`${itemName}-count`).value, 10) || 0;
@@ -282,8 +282,6 @@
                 }
             });
 
-            details += `<p>Wellness: ${currency === "eur" ? wellness.toFixed(2) : (wellness * 25).toFixed(2)} ${currency}</p>`;
-
             const cityTax = guests * nights * 2; // 2 € na osobu a den
             details += `<p>City tax: ${currency === "eur" ? cityTax.toFixed(2) : (cityTax * 25).toFixed(2)} ${currency}</p>`;
 
@@ -294,7 +292,7 @@
                 details += `<p>Discount 10%: -${currency === "eur" ? (discountAmount / 25).toFixed(2) : discountAmount.toFixed(2)} ${currency}</p>`;
             }
 
-            const finalTotal = subtotal + (currency === "eur" ? cityTax : cityTax * 25) + (currency === "eur" ? wellness : wellness * 25);
+            const finalTotal = subtotal + (currency === "eur" ? cityTax : cityTax * 25);
 
             invoice.style.display = "block";
             document.getElementById("invoiceVila").textContent = `Villa: ${document.getElementById("villa-name").textContent}`;
