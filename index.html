@@ -117,6 +117,12 @@
             button {
                 font-size: 14px;
             }
+
+            .form-group input,
+            .form-group select {
+                font-size: 12px;
+                padding: 6px;
+            }
         }
     </style>
 </head>
@@ -177,8 +183,35 @@
                 "Plyn (12 €)": 12,
                 "Wellness (€)": 150
             },
-            castle: { /* Stejné položky jako ohyeah */ },
-            pool: { /* Stejné položky jako ohyeah */ }
+            castle: {
+                "Budvar (59 Kč)": 59,
+                "Malibu (99 Kč)": 99,
+                "Jack s colou (99 Kč)": 99,
+                "Moscow Mule (99 Kč)": 99,
+                "Gin-Tonic (99 Kč)": 99,
+                "Mojito (99 Kč)": 99,
+                "Prosecco (390 Kč)": 390,
+                "Pivo sud 30 l (125 €)": 125,
+                "Pivo sud 50 l (175 €)": 175,
+                "Plyn (12 €)": 12,
+                "Wellness (€)": 150
+            },
+            pool: {
+                "Budvar (59 Kč)": 59,
+                "Coca-Cola (32 Kč)": 32,
+                "Sprite (32 Kč)": 32,
+                "Red Bull (59 Kč)": 59,
+                "Malibu (99 Kč)": 99,
+                "Jack s colou (99 Kč)": 99,
+                "Moscow Mule (99 Kč)": 99,
+                "Gin-Tonic (99 Kč)": 99,
+                "Mojito (99 Kč)": 99,
+                "Prosecco (390 Kč)": 390,
+                "Pivo sud 30 l (125 €)": 125,
+                "Pivo sud 50 l (175 €)": 175,
+                "Plyn (12 €)": 12,
+                "Wellness (€)": 150
+            }
         };
 
         function updateItems() {
@@ -217,10 +250,10 @@
             const invoiceDetails = document.getElementById("invoiceDetails");
             const invoiceTotal = document.getElementById("invoiceTotal");
 
-            let subtotal = 0; // Mezisoučet bez City Tax
+            let subtotal = 0;
             let details = "";
 
-            // Výpočet položek minibarů
+            // Výpočet minibar položek
             Object.keys(items).forEach((itemName) => {
                 const count = parseInt(document.getElementById(`${itemName}-count`).value, 10);
                 if (count > 0) {
@@ -231,15 +264,15 @@
             });
 
             // City Tax
-            const cityTax = guests * nights * 2; // Počet hostů × Počet nocí × 2 €
+            const cityTax = guests * nights * 2;
             details += `<p>City Tax: ${cityTax.toFixed(2)} €</p>`;
 
             // Sleva
             let discountAmount = 0;
             if (discount) {
-                discountAmount = subtotal * 0.1; // 10% sleva
+                discountAmount = subtotal * 0.1;
                 subtotal -= discountAmount;
-                details += `<p>Sleva 10%: -${discountAmount.toFixed(2)} ${"Kč/€"}</p>`;
+                details += `<p>Sleva 10%: -${discountAmount.toFixed(2)} Kč</p>`;
             }
 
             // Celkový součet
