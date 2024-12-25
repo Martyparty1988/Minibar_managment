@@ -9,7 +9,6 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #ff4e50, #f9d423);
             color: #333;
         }
 
@@ -27,7 +26,7 @@
 
         h1 {
             text-align: center;
-            color: #ff4e50;
+            color: white;
             font-size: 24px;
             text-transform: uppercase;
             letter-spacing: 1.5px;
@@ -107,11 +106,33 @@
             color: #ff4e50;
             font-size: 18px;
         }
+
+        /* Barvy pro vily */
+        body.ohyeah {
+            background: linear-gradient(135deg, #ff4e50, #f9d423);
+        }
+
+        body.castle {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+        }
+
+        body.pool {
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+        }
     </style>
 </head>
-<body>
+<body class="ohyeah">
     <div class="container">
-        <h1>Mini Bar Management</h1>
+        <h1 id="villa-name">Oh Yeah Villa</h1>
+        <div class="form-group">
+            <label for="vila">Výběr vily:</label>
+            <select id="vila" onchange="updateVilla()">
+                <option value="ohyeah">Oh Yeah Villa</option>
+                <option value="castle">The Little Castle</option>
+                <option value="pool">Amazing Pool</option>
+            </select>
+        </div>
+
         <div class="form-group">
             <label for="guests">Počet hostů:</label>
             <input type="number" id="guests" min="1" value="1" placeholder="Zadejte počet hostů">
@@ -123,12 +144,8 @@
         </div>
 
         <div class="form-group">
-            <label for="vila">Výběr vily:</label>
-            <select id="vila" onchange="updateItems()">
-                <option value="ohyeah">Oh Yeah</option>
-                <option value="castle">The Little Castle</option>
-                <option value="pool">Amazing Pool</option>
-            </select>
+            <label for="wellness">Wellness (€):</label>
+            <input type="number" id="wellness" min="0" value="0" placeholder="Zadejte částku pro wellness">
         </div>
 
         <div id="items"></div>
@@ -171,21 +188,18 @@
                 "Prosecco (390 Kč)": 390,
                 "Pivo sud 30 l (125 €)": 125,
                 "Pivo sud 50 l (175 €)": 175,
-                "Plyn (12 €)": 12,
-                "Wellness (€)"
+                "Plyn (12 €)": 12
             },
             castle: {
                 "Budvar (59 Kč)": 59,
                 "Malibu (99 Kč)": 99,
                 "Jack s colou (99 Kč)": 99,
-                "Moscow Mule (99 Kč)": 99,
                 "Gin-Tonic (99 Kč)": 99,
                 "Mojito (99 Kč)": 99,
                 "Prosecco (390 Kč)": 390,
                 "Pivo sud 30 l (125 €)": 125,
                 "Pivo sud 50 l (175 €)": 175,
-                "Plyn (12 €)": 12,
-                "Wellness (€)"
+                "Plyn (12 €)": 12
             },
             pool: {
                 "Budvar (59 Kč)": 59,
@@ -194,19 +208,30 @@
                 "Red Bull (59 Kč)": 59,
                 "Malibu (99 Kč)": 99,
                 "Jack s colou (99 Kč)": 99,
-                "Moscow Mule (99 Kč)": 99,
                 "Gin-Tonic (99 Kč)": 99,
                 "Mojito (99 Kč)": 99,
                 "Prosecco (390 Kč)": 390,
                 "Pivo sud 30 l (125 €)": 125,
                 "Pivo sud 50 l (175 €)": 175,
-                "Plyn (12 €)": 12,
-                "Wellness (€)"
+                "Plyn (12 €)": 12
             }
         };
 
-        function updateItems() {
+        function updateVilla() {
             const vila = document.getElementById("vila").value;
+            const villaNames = {
+                ohyeah: "Oh Yeah Villa",
+                castle: "The Little Castle",
+                pool: "Amazing Pool"
+            };
+
+            document.body.className = vila;
+            document.getElementById("villa-name").textContent = villaNames[vila];
+
+            updateItems(vila);
+        }
+
+        function updateItems(vila) {
             const items = itemsData[vila];
             const container = document.getElementById("items");
             container.innerHTML = "";
@@ -231,15 +256,10 @@
         }
 
         function generateInvoice() {
-            const vilaMap = {
-                ohyeah: "Oh Yeah Villa",
-                castle: "The Little Castle",
-                pool: "Amazing Pool"
-            };
-
             const vila = document.getElementById("vila").value;
             const guests = parseInt(document.getElementById("guests").value, 10);
             const nights = parseInt(document.getElementById("nights").value, 10);
+            const wellness = parseFloat(document.getElementById("wellness").value) || 0;
             const discount = document.getElementById("discount").checked;
             const currency = document.getElementById("currency").value;
 
@@ -262,6 +282,8 @@
                 }
             });
 
+            details += `<p>Wellness: ${currency === "eur" ? wellness.toFixed(2) : (wellness * 25).toFixed(2)} ${currency}</p>`;
+
             const cityTax = guests * nights * 2; // 2 € na osobu a den
             details += `<p>City tax: ${currency === "eur" ? cityTax.toFixed(2) : (cityTax * 25).toFixed(2)} ${currency}</p>`;
 
@@ -272,16 +294,16 @@
                 details += `<p>Discount 10%: -${currency === "eur" ? (discountAmount / 25).toFixed(2) : discountAmount.toFixed(2)} ${currency}</p>`;
             }
 
-            const finalTotal = subtotal + (currency === "eur" ? cityTax : cityTax * 25);
+            const finalTotal = subtotal + (currency === "eur" ? cityTax : cityTax * 25) + (currency === "eur" ? wellness : wellness * 25);
 
             invoice.style.display = "block";
-            document.getElementById("invoiceVila").textContent = `Villa: ${vilaMap[vila]}`;
-            document.getElementById("invoiceDate").textContent = `Date: ${new Date().toLocaleDateString('cs-CZ')}`;
+            document.getElementById("invoiceVila").textContent = `Villa: ${document.getElementById("villa-name").textContent}`;
+            document.getElementById("invoiceDate").textContent = `Date: ${new Date().toLocaleDateString("cs-CZ")}`;
             invoiceDetails.innerHTML = details;
             invoiceTotal.innerHTML = `<p>Total: ${finalTotal.toFixed(2)} ${currency}</p>`;
         }
 
-        window.onload = updateItems;
+        window.onload = updateVilla;
     </script>
 </body>
 </html>
