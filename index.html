@@ -257,6 +257,47 @@
 
             document.body.className = vila;
             document.getElementById("villa-name").textContent = villaNames[vila];
+            updateItems(vila);
+        }
+
+        function updateItems(vila) {
+            const items = itemsData[vila];
+            const container = document.getElementById("items");
+            container.innerHTML = "";
+
+            Object.keys(items).forEach((itemName) => {
+                const formGroup = document.createElement("div");
+                formGroup.classList.add("form-group");
+
+                const label = document.createElement("label");
+                label.textContent = itemName;
+
+                const input = document.createElement("input");
+                input.type = "number";
+                input.placeholder = "Zadejte počet";
+                input.min = "0";
+                input.id = `${itemName}-count`;
+
+                formGroup.appendChild(label);
+                formGroup.appendChild(input);
+                container.appendChild(formGroup);
+            });
+        }
+
+        function setPaymentStatus() {
+            const payment = document.getElementById("payment").value;
+            const invoice = document.getElementById("invoice");
+
+            if (payment === "paid-cash") {
+                invoice.className = "invoice paid-cash";
+                document.getElementById("paymentStatus").textContent = "Stav platby: Placeno cash";
+            } else if (payment === "paid-card") {
+                invoice.className = "invoice paid-card";
+                document.getElementById("paymentStatus").textContent = "Stav platby: Placeno kartou";
+            } else {
+                invoice.className = "invoice unpaid";
+                document.getElementById("paymentStatus").textContent = "Stav platby: Neplaceno";
+            }
         }
 
         function generateInvoice() {
@@ -267,8 +308,53 @@
                 pool: "Amazing Pool"
             };
 
+            const guests = parseInt(document.getElementById("guests").value) || 0;
+            const nights = parseInt(document.getElementById("nights").value) || 0;
+            const wellness = parseFloat(document.getElementById("wellness").value) || 0;
+            const discount = document.getElementById("discount").checked;
+            const currency = document.getElementById("currency").value;
+
+            const items = itemsData[vila];
+            const invoiceDetails = document.getElementById("invoiceDetails");
+            const invoiceTotal = document.getElementById("invoiceTotal");
+
+            let subtotal = 0;
+            let details = "";
+
+            subtotal += currency === "eur" ? wellness : wellness * exchangeRate;
+            details += `<p>Wellness: ${currency === "eur" ? wellness.toFixed(2) : (wellness * exchangeRate).toFixed(2)} ${currency}</p>`;
+
+            Object.keys(items).forEach((itemName) => {
+                const count = parseInt(document.getElementById(`${itemName}-count`).value, 10) || 0;
+                if (count > 0) {
+                    const price = items[itemName];
+                    const itemTotal = itemName.includes("€")
+                        ? count * price * (currency === "czk" ? exchangeRate : 1)
+                        : count * price * (currency === "eur" ? 1 / exchangeRate : 1);
+
+                    subtotal += itemTotal;
+                    details += `<p>${count}x ${itemName}: ${itemTotal.toFixed(2)} ${currency}</p>`;
+                }
+            });
+
+            const cityTax = guests * nights * 2; // 2 € na osobu a den
+            const cityTaxConverted = currency === "eur" ? cityTax : cityTax * exchangeRate;
+
+            details += `<p>City tax: ${cityTaxConverted.toFixed(2)} ${currency}</p>`;
+
+            let discountAmount = 0;
+            if (discount) {
+                discountAmount = subtotal * 0.1;
+                subtotal -= discountAmount;
+                details += `<p>Discount 10%: -${discountAmount.toFixed(2)} ${currency}</p>`;
+            }
+
+            const finalTotal = subtotal + cityTaxConverted;
+
             document.getElementById("invoiceVillaName").textContent = villaNames[vila];
             document.getElementById("invoiceDate").textContent = `Date: ${new Date().toLocaleDateString("cs-CZ")}`;
+            invoiceDetails.innerHTML = details;
+            invoiceTotal.innerHTML = `<p>Total: ${finalTotal.toFixed(2)} ${currency}</p>`;
             document.getElementById("invoice").style.display = "block";
         }
 
