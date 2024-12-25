@@ -166,10 +166,16 @@
             <input type="checkbox" id="discount">
         </div>
 
+        <div class="form-group">
+            <label for="payment">Stav platby:</label>
+            <select id="payment" onchange="setPaymentStatus()">
+                <option value="unpaid">Neplaceno</option>
+                <option value="paid-cash">Placeno cash</option>
+                <option value="paid-card">Placeno kartou</option>
+            </select>
+        </div>
+
         <button onclick="generateInvoice()">Generovat fakturu</button>
-
-        <button onclick="setPaymentStatus()">Nastavit stav platby</button>
-
         <button onclick="downloadInvoice()">Stáhnout fakturu jako obrázek</button>
 
         <div id="invoice" class="invoice unpaid" style="display: none;">
@@ -225,8 +231,6 @@
             }
         };
 
-        let paymentStatus = "Neplaceno";
-
         function updateVilla() {
             const vila = document.getElementById("vila").value;
             const villaNames = {
@@ -263,6 +267,22 @@
             });
         }
 
+        function setPaymentStatus() {
+            const payment = document.getElementById("payment").value;
+            const invoice = document.getElementById("invoice");
+
+            if (payment === "paid-cash") {
+                invoice.className = "invoice paid-cash";
+                document.getElementById("paymentStatus").textContent = "Stav platby: Placeno cash";
+            } else if (payment === "paid-card") {
+                invoice.className = "invoice paid-card";
+                document.getElementById("paymentStatus").textContent = "Stav platby: Placeno kartou";
+            } else {
+                invoice.className = "invoice unpaid";
+                document.getElementById("paymentStatus").textContent = "Stav platby: Neplaceno";
+            }
+        }
+
         function generateInvoice() {
             const vila = document.getElementById("vila").value;
             const villaNames = {
@@ -278,7 +298,6 @@
             const currency = document.getElementById("currency").value;
 
             const items = itemsData[vila];
-            const invoice = document.getElementById("invoice");
             const invoiceDetails = document.getElementById("invoiceDetails");
             const invoiceTotal = document.getElementById("invoiceTotal");
 
@@ -319,27 +338,7 @@
             document.getElementById("invoiceDate").textContent = `Date: ${new Date().toLocaleDateString("cs-CZ")}`;
             invoiceDetails.innerHTML = details;
             invoiceTotal.innerHTML = `<p>Total: ${finalTotal.toFixed(2)} ${currency}</p>`;
-            document.getElementById("paymentStatus").textContent = `Stav platby: ${paymentStatus}`;
-            invoice.style.display = "block";
-        }
-
-        function setPaymentStatus() {
-            const status = prompt(
-                "Zadejte stav platby (placeno cash, placeno kartou, neplaceno):"
-            ).toLowerCase();
-
-            const invoice = document.getElementById("invoice");
-
-            if (status === "placeno cash") {
-                paymentStatus = "Placeno cash";
-                invoice.className = "invoice paid-cash";
-            } else if (status === "placeno kartou") {
-                paymentStatus = "Placeno kartou";
-                invoice.className = "invoice paid-card";
-            } else {
-                paymentStatus = "Neplaceno";
-                invoice.className = "invoice unpaid";
-            }
+            document.getElementById("invoice").style.display = "block";
         }
 
         function downloadInvoice() {
