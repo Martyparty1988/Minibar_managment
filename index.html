@@ -89,10 +89,10 @@
         }
 
         .invoice-header h2 {
-            color: #3498db;
             margin-bottom: 10px;
             font-size: 22px;
             text-align: center;
+            text-transform: uppercase;
         }
 
         .invoice-details p {
@@ -119,6 +119,18 @@
         body.pool {
             background: linear-gradient(135deg, #56ab2f, #a8e063);
         }
+
+        .ohyeah .invoice-header h2 {
+            color: #ff4e50;
+        }
+
+        .castle .invoice-header h2 {
+            color: #1e3c72;
+        }
+
+        .pool .invoice-header h2 {
+            color: #56ab2f;
+        }
     </style>
 </head>
 <body class="ohyeah">
@@ -135,17 +147,17 @@
 
         <div class="form-group">
             <label for="guests">Počet hostů:</label>
-            <input type="number" id="guests" min="1" value="1" placeholder="Zadejte počet hostů">
+            <input type="number" id="guests" min="1" placeholder="Zadejte počet hostů">
         </div>
 
         <div class="form-group">
             <label for="nights">Počet nocí:</label>
-            <input type="number" id="nights" min="1" value="1" placeholder="Zadejte počet nocí">
+            <input type="number" id="nights" min="1" placeholder="Zadejte počet nocí">
         </div>
 
         <div class="form-group">
             <label for="wellness">Wellness (€):</label>
-            <input type="number" id="wellness" min="0" value="0" placeholder="Zadejte částku pro wellness">
+            <input type="number" id="wellness" min="0" placeholder="Zadejte částku pro wellness">
         </div>
 
         <div id="items"></div>
@@ -169,8 +181,7 @@
 
         <div id="invoice" class="invoice" style="display: none;">
             <div class="invoice-header">
-                <h2>Faktura</h2>
-                <p id="invoiceVila"></p>
+                <h2 id="invoiceVillaName"></h2>
                 <p id="invoiceDate"></p>
             </div>
             <div class="invoice-details" id="invoiceDetails"></div>
@@ -259,8 +270,14 @@
 
         function generateInvoice() {
             const vila = document.getElementById("vila").value;
-            const guests = parseInt(document.getElementById("guests").value, 10);
-            const nights = parseInt(document.getElementById("nights").value, 10);
+            const villaNames = {
+                ohyeah: "Oh Yeah Villa",
+                castle: "The Little Castle",
+                pool: "Amazing Pool"
+            };
+
+            const guests = parseInt(document.getElementById("guests").value, 10) || 0;
+            const nights = parseInt(document.getElementById("nights").value, 10) || 0;
             const wellness = parseFloat(document.getElementById("wellness").value) || 0;
             const discount = document.getElementById("discount").checked;
             const currency = document.getElementById("currency").value;
@@ -303,11 +320,11 @@
 
             const finalTotal = subtotal + cityTaxConverted;
 
-            invoice.style.display = "block";
-            document.getElementById("invoiceVila").textContent = `Villa: ${document.getElementById("villa-name").textContent}`;
+            document.getElementById("invoiceVillaName").textContent = villaNames[vila];
             document.getElementById("invoiceDate").textContent = `Date: ${new Date().toLocaleDateString("cs-CZ")}`;
             invoiceDetails.innerHTML = details;
             invoiceTotal.innerHTML = `<p>Total: ${finalTotal.toFixed(2)} ${currency}</p>`;
+            invoice.style.display = "block";
         }
 
         function downloadInvoice() {
