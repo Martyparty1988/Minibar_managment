@@ -270,8 +270,11 @@
             const invoiceDetails = document.getElementById("invoiceDetails");
             const invoiceTotal = document.getElementById("invoiceTotal");
 
-            let subtotal = wellness;
-            let details = `<p>Wellness: ${currency === "eur" ? wellness.toFixed(2) : (wellness * exchangeRate).toFixed(2)} ${currency}</p>`;
+            let subtotal = 0;
+            let details = "";
+
+            subtotal += currency === "eur" ? wellness : wellness * exchangeRate;
+            details += `<p>Wellness: ${currency === "eur" ? wellness.toFixed(2) : (wellness * exchangeRate).toFixed(2)} ${currency}</p>`;
 
             Object.keys(items).forEach((itemName) => {
                 const count = parseInt(document.getElementById(`${itemName}-count`).value, 10) || 0;
@@ -311,7 +314,7 @@
             const invoice = document.getElementById("invoice");
             html2canvas(invoice).then(canvas => {
                 const link = document.createElement("a");
-                link.download = "faktura.png";
+                link.download = "download.png";
                 link.href = canvas.toDataURL();
                 link.click();
             });
