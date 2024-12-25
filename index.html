@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini Bar Management</title>
     <style>
         body {
@@ -39,18 +39,11 @@
         }
 
         .form-group label {
-            display: flex;
-            align-items: center;
+            display: block;
             font-size: 16px;
             font-weight: bold;
             color: #333;
             margin-bottom: 8px;
-        }
-
-        .form-group label img {
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
         }
 
         .form-group input,
@@ -61,6 +54,7 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             box-sizing: border-box;
+            margin-bottom: 10px;
         }
 
         button {
@@ -93,14 +87,6 @@
             border: 1px solid #ddd;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             font-size: 16px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        .invoice.active {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .invoice-header h2 {
@@ -121,32 +107,21 @@
             color: #ff4e50;
             font-size: 18px;
         }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 15px;
-            }
-
-            h1 {
-                font-size: 22px;
-            }
-
-            button {
-                font-size: 16px;
-                padding: 12px;
-            }
-
-            .form-group input,
-            .form-group select {
-                font-size: 14px;
-                padding: 8px;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Mini Bar Management</h1>
+        <div class="form-group">
+            <label for="guests">Počet hostů:</label>
+            <input type="number" id="guests" min="1" value="1" placeholder="Zadejte počet hostů">
+        </div>
+
+        <div class="form-group">
+            <label for="nights">Počet nocí:</label>
+            <input type="number" id="nights" min="1" value="1" placeholder="Zadejte počet nocí">
+        </div>
+
         <div class="form-group">
             <label for="vila">Výběr vily:</label>
             <select id="vila" onchange="updateItems()">
@@ -159,23 +134,21 @@
         <div id="items"></div>
 
         <div class="form-group">
-            <label for="guests">Počet hostů:</label>
-            <input type="number" id="guests" min="1" value="1" oninput="updateInvoice()">
-        </div>
-
-        <div class="form-group">
-            <label for="nights">Počet nocí:</label>
-            <input type="number" id="nights" min="1" value="1" oninput="updateInvoice()">
+            <label for="currency">Zobrazit částky v:</label>
+            <select id="currency">
+                <option value="czk">Kč</option>
+                <option value="eur">€</option>
+            </select>
         </div>
 
         <div class="form-group">
             <label for="discount">Uplatnit slevu 10%:</label>
-            <input type="checkbox" id="discount" onchange="updateInvoice()">
+            <input type="checkbox" id="discount">
         </div>
 
-        <button onclick="updateInvoice()">Aktualizovat fakturu</button>
+        <button onclick="generateInvoice()">Generovat fakturu</button>
 
-        <div id="invoice" class="invoice">
+        <div id="invoice" class="invoice" style="display: none;">
             <div class="invoice-header">
                 <h2>Faktura</h2>
                 <p id="invoiceVila"></p>
@@ -200,6 +173,35 @@
                 "Pivo sud 50 l (175 €)": 175,
                 "Plyn (12 €)": 12,
                 "Wellness (€)": 150
+            },
+            castle: {
+                "Budvar (59 Kč)": 59,
+                "Malibu (99 Kč)": 99,
+                "Jack s colou (99 Kč)": 99,
+                "Moscow Mule (99 Kč)": 99,
+                "Gin-Tonic (99 Kč)": 99,
+                "Mojito (99 Kč)": 99,
+                "Prosecco (390 Kč)": 390,
+                "Pivo sud 30 l (125 €)": 125,
+                "Pivo sud 50 l (175 €)": 175,
+                "Plyn (12 €)": 12,
+                "Wellness (€)": 150
+            },
+            pool: {
+                "Budvar (59 Kč)": 59,
+                "Coca-Cola (32 Kč)": 32,
+                "Sprite (32 Kč)": 32,
+                "Red Bull (59 Kč)": 59,
+                "Malibu (99 Kč)": 99,
+                "Jack s colou (99 Kč)": 99,
+                "Moscow Mule (99 Kč)": 99,
+                "Gin-Tonic (99 Kč)": 99,
+                "Mojito (99 Kč)": 99,
+                "Prosecco (390 Kč)": 390,
+                "Pivo sud 30 l (125 €)": 125,
+                "Pivo sud 50 l (175 €)": 175,
+                "Plyn (12 €)": 12,
+                "Wellness (€)": 150
             }
         };
 
@@ -214,17 +216,13 @@
                 formGroup.classList.add("form-group");
 
                 const label = document.createElement("label");
-                const icon = document.createElement("img");
-                icon.src = "https://via.placeholder.com/24"; // Změňte na správnou URL ikony
-                label.appendChild(icon);
-                label.appendChild(document.createTextNode(itemName));
+                label.textContent = itemName;
 
                 const input = document.createElement("input");
                 input.type = "number";
+                input.placeholder = "Zadejte počet";
                 input.min = "0";
-                input.value = "0";
                 input.id = `${itemName}-count`;
-                input.oninput = updateInvoice;
 
                 formGroup.appendChild(label);
                 formGroup.appendChild(input);
@@ -232,11 +230,12 @@
             });
         }
 
-        function updateInvoice() {
+        function generateInvoice() {
             const vila = document.getElementById("vila").value;
             const guests = parseInt(document.getElementById("guests").value, 10);
             const nights = parseInt(document.getElementById("nights").value, 10);
             const discount = document.getElementById("discount").checked;
+            const currency = document.getElementById("currency").value;
 
             const items = itemsData[vila];
             const invoice = document.getElementById("invoice");
@@ -249,29 +248,31 @@
             Object.keys(items).forEach((itemName) => {
                 const count = parseInt(document.getElementById(`${itemName}-count`).value, 10) || 0;
                 if (count > 0) {
-                    const itemTotal = count * items[itemName];
+                    const price = items[itemName];
+                    const itemTotal = count * price;
                     subtotal += itemTotal;
-                    details += `<p>${itemName}: ${itemTotal} ${itemName.includes("€") ? "€" : "Kč"}</p>`;
+
+                    details += `<p>${itemName}: ${currency === "eur" ? (itemTotal / 25).toFixed(2) : itemTotal} ${currency}</p>`;
                 }
             });
 
-            const cityTax = guests * nights * 2;
-            details += `<p>City Tax: ${cityTax.toFixed(2)} €</p>`;
+            const cityTax = guests * nights * 2; // 2 € na osobu a den
+            details += `<p>Městská daň: ${currency === "eur" ? cityTax.toFixed(2) : (cityTax * 25).toFixed(2)} ${currency}</p>`;
 
             let discountAmount = 0;
             if (discount) {
                 discountAmount = subtotal * 0.1;
                 subtotal -= discountAmount;
-                details += `<p>Sleva 10%: -${discountAmount.toFixed(2)} Kč</p>`;
+                details += `<p>Sleva 10%: -${currency === "eur" ? (discountAmount / 25).toFixed(2) : discountAmount.toFixed(2)} ${currency}</p>`;
             }
 
-            const finalTotal = subtotal + cityTax;
+            const finalTotal = subtotal + (currency === "eur" ? cityTax : cityTax * 25);
 
-            invoice.classList.add("active");
+            invoice.style.display = "block";
             document.getElementById("invoiceVila").textContent = `Vila: ${vila}`;
             document.getElementById("invoiceDate").textContent = `Datum: ${new Date().toLocaleDateString()}`;
             invoiceDetails.innerHTML = details;
-            invoiceTotal.innerHTML = `<p>Celkem: ${finalTotal.toFixed(2)} €</p>`;
+            invoiceTotal.innerHTML = `<p>Celkem: ${finalTotal.toFixed(2)} ${currency}</p>`;
         }
 
         window.onload = updateItems;
