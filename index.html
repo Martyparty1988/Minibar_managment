@@ -231,6 +231,12 @@
         }
 
         function generateInvoice() {
+            const vilaMap = {
+                ohyeah: "Oh Yeah Villa",
+                castle: "The Little Castle",
+                pool: "Amazing Pool"
+            };
+
             const vila = document.getElementById("vila").value;
             const guests = parseInt(document.getElementById("guests").value, 10);
             const nights = parseInt(document.getElementById("nights").value, 10);
@@ -257,22 +263,22 @@
             });
 
             const cityTax = guests * nights * 2; // 2 € na osobu a den
-            details += `<p>Městská daň: ${currency === "eur" ? cityTax.toFixed(2) : (cityTax * 25).toFixed(2)} ${currency}</p>`;
+            details += `<p>City tax: ${currency === "eur" ? cityTax.toFixed(2) : (cityTax * 25).toFixed(2)} ${currency}</p>`;
 
             let discountAmount = 0;
             if (discount) {
                 discountAmount = subtotal * 0.1;
                 subtotal -= discountAmount;
-                details += `<p>Sleva 10%: -${currency === "eur" ? (discountAmount / 25).toFixed(2) : discountAmount.toFixed(2)} ${currency}</p>`;
+                details += `<p>Discount 10%: -${currency === "eur" ? (discountAmount / 25).toFixed(2) : discountAmount.toFixed(2)} ${currency}</p>`;
             }
 
             const finalTotal = subtotal + (currency === "eur" ? cityTax : cityTax * 25);
 
             invoice.style.display = "block";
-            document.getElementById("invoiceVila").textContent = `Vila: ${vila}`;
-            document.getElementById("invoiceDate").textContent = `Datum: ${new Date().toLocaleDateString()}`;
+            document.getElementById("invoiceVila").textContent = `Villa: ${vilaMap[vila]}`;
+            document.getElementById("invoiceDate").textContent = `Date: ${new Date().toLocaleDateString('cs-CZ')}`;
             invoiceDetails.innerHTML = details;
-            invoiceTotal.innerHTML = `<p>Celkem: ${finalTotal.toFixed(2)} ${currency}</p>`;
+            invoiceTotal.innerHTML = `<p>Total: ${finalTotal.toFixed(2)} ${currency}</p>`;
         }
 
         window.onload = updateItems;
