@@ -107,33 +107,24 @@
             font-size: 18px;
         }
 
-        /* Barvy pro vily */
-        body.ohyeah {
-            background: linear-gradient(135deg, #ff4e50, #f9d423);
+        /* Barvy pro stav platby */
+        .paid-cash {
+            border: 2px solid #27ae60;
+            background-color: #ecf9ec;
         }
 
-        body.castle {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+        .paid-card {
+            border: 2px solid #3498db;
+            background-color: #eaf4fb;
         }
 
-        body.pool {
-            background: linear-gradient(135deg, #56ab2f, #a8e063);
-        }
-
-        .ohyeah .invoice-header h2 {
-            color: #ff4e50;
-        }
-
-        .castle .invoice-header h2 {
-            color: #1e3c72;
-        }
-
-        .pool .invoice-header h2 {
-            color: #56ab2f;
+        .unpaid {
+            border: 2px solid #e74c3c;
+            background-color: #fceeee;
         }
     </style>
 </head>
-<body class="ohyeah">
+<body>
     <div class="container">
         <h1 id="villa-name">Oh Yeah Villa</h1>
         <div class="form-group">
@@ -177,15 +168,18 @@
 
         <button onclick="generateInvoice()">Generovat fakturu</button>
 
+        <button onclick="setPaymentStatus()">Nastavit stav platby</button>
+
         <button onclick="downloadInvoice()">Stáhnout fakturu jako obrázek</button>
 
-        <div id="invoice" class="invoice" style="display: none;">
+        <div id="invoice" class="invoice unpaid" style="display: none;">
             <div class="invoice-header">
                 <h2 id="invoiceVillaName"></h2>
                 <p id="invoiceDate"></p>
             </div>
             <div class="invoice-details" id="invoiceDetails"></div>
             <div class="invoice-total" id="invoiceTotal"></div>
+            <div id="paymentStatus" class="payment-status"></div>
         </div>
     </div>
 
@@ -231,6 +225,8 @@
             }
         };
 
+        let paymentStatus = "Neplaceno";
+
         function updateVilla() {
             const vila = document.getElementById("vila").value;
             const villaNames = {
@@ -239,7 +235,6 @@
                 pool: "Amazing Pool"
             };
 
-            document.body.className = vila;
             document.getElementById("villa-name").textContent = villaNames[vila];
             updateItems(vila);
         }
@@ -276,8 +271,8 @@
                 pool: "Amazing Pool"
             };
 
-            const guests = parseInt(document.getElementById("guests").value, 10) || 0;
-            const nights = parseInt(document.getElementById("nights").value, 10) || 0;
+            const guests = parseInt(document.getElementById("guests").value) || 0;
+            const nights = parseInt(document.getElementById("nights").value) || 0;
             const wellness = parseFloat(document.getElementById("wellness").value) || 0;
             const discount = document.getElementById("discount").checked;
             const currency = document.getElementById("currency").value;
@@ -302,7 +297,7 @@
                         : count * price * (currency === "eur" ? 1 / exchangeRate : 1);
 
                     subtotal += itemTotal;
-                    details += `<p>${itemName}: ${itemTotal.toFixed(2)} ${currency}</p>`;
+                    details += `<p>${count}x ${itemName}: ${itemTotal.toFixed(2)} ${currency}</p>`;
                 }
             });
 
@@ -324,7 +319,27 @@
             document.getElementById("invoiceDate").textContent = `Date: ${new Date().toLocaleDateString("cs-CZ")}`;
             invoiceDetails.innerHTML = details;
             invoiceTotal.innerHTML = `<p>Total: ${finalTotal.toFixed(2)} ${currency}</p>`;
+            document.getElementById("paymentStatus").textContent = `Stav platby: ${paymentStatus}`;
             invoice.style.display = "block";
+        }
+
+        function setPaymentStatus() {
+            const status = prompt(
+                "Zadejte stav platby (placeno cash, placeno kartou, neplaceno):"
+            ).toLowerCase();
+
+            const invoice = document.getElementById("invoice");
+
+            if (status === "placeno cash") {
+                paymentStatus = "Placeno cash";
+                invoice.className = "invoice paid-cash";
+            } else if (status === "placeno kartou") {
+                paymentStatus = "Placeno kartou";
+                invoice.className = "invoice paid-card";
+            } else {
+                paymentStatus = "Neplaceno";
+                invoice.className = "invoice unpaid";
+            }
         }
 
         function downloadInvoice() {
