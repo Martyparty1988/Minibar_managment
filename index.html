@@ -33,7 +33,7 @@
             text-transform: uppercase;
         }
 
-        .item {
+        .item, .form-group {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -41,6 +41,10 @@
             padding: 10px 15px;
             border-radius: 12px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .wellness, .city-tax {
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
         }
 
         .beer {
@@ -53,6 +57,10 @@
 
         .softdrink {
             background: linear-gradient(135deg, #63cdda, #81ecec);
+        }
+
+        .utility {
+            background: linear-gradient(135deg, #fdcb6e, #ffeaa7);
         }
 
         .item-icon {
@@ -75,21 +83,6 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             text-align: center;
-        }
-
-        .invoice {
-            background: #f4f4f4;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
-        .invoice h2 {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #333;
         }
 
         button {
@@ -117,26 +110,33 @@
 <body>
     <div class="container">
         <h1>Mini Bar Management</h1>
-        <div class="form-group">
-            <label for="vila">Výběr vily:</label>
-            <select id="vila">
+        <!-- Výběr vily -->
+        <div class="form-group wellness">
+            <div class="item-icon">🏡</div>
+            <label for="vila" class="item-name">Výběr vily:</label>
+            <select id="vila" class="item-input">
                 <option value="ohyeah">Oh Yeah Villa</option>
                 <option value="castle">The Little Castle</option>
                 <option value="pool">Amazing Pool</option>
             </select>
         </div>
 
-        <!-- Wellness a CityTax -->
-        <div class="form-group">
-            <label for="wellness">Wellness (€):</label>
+        <!-- Wellness -->
+        <div class="form-group wellness">
+            <div class="item-icon">💆</div>
+            <label for="wellness" class="item-name">Wellness (€):</label>
             <input type="number" id="wellness" value="0" min="0" class="item-input">
         </div>
-        <div class="form-group">
-            <label for="guests">Počet hostů (pro městskou daň):</label>
+
+        <!-- Městská daň -->
+        <div class="form-group city-tax">
+            <div class="item-icon">🌆</div>
+            <label for="guests" class="item-name">Počet hostů:</label>
             <input type="number" id="guests" value="0" min="0" class="item-input">
         </div>
-        <div class="form-group">
-            <label for="nights">Počet nocí (pro městskou daň):</label>
+        <div class="form-group city-tax">
+            <div class="item-icon">🛏️</div>
+            <label for="nights" class="item-name">Počet nocí:</label>
             <input type="number" id="nights" value="0" min="0" class="item-input">
         </div>
 
@@ -155,8 +155,8 @@
 
     <script>
         const sklad = JSON.parse(localStorage.getItem("sklad")) || {
-            "Budvar": 100,
-            "Malibu": 50,
+            "Budvar": 50,
+            "Malibu": 48,
             "Jack s colou": 50,
             "Moscow Mule": 30,
             "Gin-Tonic": 50,
@@ -167,6 +167,8 @@
             "Prosecco": 20,
             "Pivo sud 30 l": 10,
             "Pivo sud 50 l": 5,
+            "Plyn": 12,
+            "Gril": 20
         };
 
         const icons = {
@@ -181,7 +183,9 @@
             "Red Bull": "🪽",
             "Prosecco": "🍾",
             "Pivo sud 30 l": "🍺",
-            "Pivo sud 50 l": "🍺"
+            "Pivo sud 50 l": "🍺",
+            "Plyn": "🔥",
+            "Gril": "🍖"
         };
 
         const categories = {
@@ -197,6 +201,8 @@
             "Coca-Cola": "softdrink",
             "Sprite": "softdrink",
             "Red Bull": "softdrink",
+            "Plyn": "utility",
+            "Gril": "utility"
         };
 
         function loadItems() {
