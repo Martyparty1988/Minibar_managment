@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sklad</title>
+    <title>Mini Bar Management</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #56ab2f, #a8e063);
+            color: #333;
+            background: linear-gradient(135deg, #ff4e50, #f9d423);
         }
 
         .container {
@@ -28,7 +29,7 @@
             text-align: center;
             font-size: 28px;
             margin-bottom: 20px;
-            color: #56ab2f;
+            color: #ff4e50;
             text-transform: uppercase;
         }
 
@@ -43,13 +44,15 @@
             margin-bottom: 8px;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
             font-size: 16px;
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-sizing: border-box;
+            margin-bottom: 10px;
         }
 
         button {
@@ -75,10 +78,18 @@
 </head>
 <body>
     <div class="container">
-        <h1>Sklad</h1>
-        <div id="sklad-items"></div>
-        <button onclick="updateStock()">Uložit změny</button>
-        <button onclick="location.href='index.html'">Zpět na hlavní stránku</button>
+        <h1>Mini Bar Management</h1>
+        <div class="form-group">
+            <label for="vila">Výběr vily:</label>
+            <select id="vila">
+                <option value="ohyeah">Oh Yeah Villa</option>
+                <option value="castle">The Little Castle</option>
+                <option value="pool">Amazing Pool</option>
+            </select>
+        </div>
+        <div id="items"></div>
+        <button onclick="generateInvoice()">Generovat fakturu</button>
+        <button onclick="window.location.href='sklad.html'">Přejít do skladu</button>
     </div>
 
     <script>
@@ -97,8 +108,8 @@
             "Pivo sud 50 l": 5,
         };
 
-        function loadStock() {
-            const container = document.getElementById("sklad-items");
+        function loadItems() {
+            const container = document.getElementById("items");
             container.innerHTML = "";
             Object.keys(sklad).forEach(itemName => {
                 const formGroup = document.createElement("div");
@@ -107,27 +118,30 @@
                 label.textContent = `${itemName} (${sklad[itemName]} ks skladem)`;
                 const input = document.createElement("input");
                 input.type = "number";
-                input.value = sklad[itemName];
-                input.id = `${itemName}-stock`;
+                input.min = "0";
+                input.value = "0";
+                input.id = `${itemName}-count`;
                 formGroup.appendChild(label);
                 formGroup.appendChild(input);
                 container.appendChild(formGroup);
             });
         }
 
-        function updateStock() {
+        function generateInvoice() {
+            const vila = document.getElementById("vila").value;
             Object.keys(sklad).forEach(itemName => {
-                const input = document.getElementById(`${itemName}-stock`);
-                if (input) {
-                    sklad[itemName] = parseInt(input.value) || 0;
+                const input = document.getElementById(`${itemName}-count`);
+                const count = parseInt(input.value) || 0;
+                if (count > 0) {
+                    sklad[itemName] = Math.max(0, sklad[itemName] - count);
                 }
             });
             localStorage.setItem("sklad", JSON.stringify(sklad));
-            alert("Sklad aktualizován!");
-            loadStock();
+            alert(`Faktura pro vilu ${vila} byla vygenerována a sklad aktualizován.`);
+            loadItems();
         }
 
-        window.onload = loadStock;
+        window.onload = loadItems;
     </script>
 </body>
 </html>
