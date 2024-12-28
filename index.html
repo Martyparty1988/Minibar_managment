@@ -125,19 +125,19 @@
         <div class="form-group wellness">
             <div class="item-icon">🛁</div>
             <label for="wellness" class="item-name">Wellness (€):</label>
-            <input type="number" id="wellness" value="0" min="0" class="item-input">
+            <input type="number" id="wellness" placeholder="Zadejte částku" min="0" class="item-input">
         </div>
 
         <!-- Městská daň -->
         <div class="form-group city-tax">
             <div class="item-icon">🌆</div>
             <label for="guests" class="item-name">Počet hostů:</label>
-            <input type="number" id="guests" value="0" min="0" class="item-input">
+            <input type="number" id="guests" placeholder="Zadejte počet" min="0" class="item-input">
         </div>
         <div class="form-group city-tax">
             <div class="item-icon">🛏️</div>
             <label for="nights" class="item-name">Počet nocí:</label>
-            <input type="number" id="nights" value="0" min="0" class="item-input">
+            <input type="number" id="nights" placeholder="Zadejte počet" min="0" class="item-input">
         </div>
 
         <!-- Položky skladu -->
@@ -224,7 +224,7 @@
                 const input = document.createElement("input");
                 input.type = "number";
                 input.min = "0";
-                input.value = "0";
+                input.placeholder = "Zadejte počet";
                 input.classList.add("item-input");
                 input.id = `${itemName}-count`;
 
