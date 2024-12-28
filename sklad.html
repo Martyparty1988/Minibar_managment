@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             background: linear-gradient(135deg, #56ab2f, #a8e063);
+            color: #333;
         }
 
         .container {
@@ -18,7 +19,7 @@
             margin: 20px auto;
             background: #fff;
             border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             padding: 20px;
             box-sizing: border-box;
@@ -26,14 +27,42 @@
 
         h1 {
             text-align: center;
-            font-size: 28px;
+            font-size: 32px;
             margin-bottom: 20px;
             color: #56ab2f;
             text-transform: uppercase;
         }
 
-        .form-group {
-            margin-bottom: 15px;
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: #f4f4f4;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-icon {
+            font-size: 28px;
+            color: #56ab2f;
+        }
+
+        .item-name {
+            flex: 1;
+            margin-left: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .item-input {
+            width: 80px;
+            font-size: 16px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
         }
 
         button {
@@ -50,6 +79,7 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
         button:hover {
@@ -81,21 +111,47 @@
             "Pivo sud 50 l": 5,
         };
 
+        const icons = {
+            "Budvar": "🍺",
+            "Malibu": "🍹",
+            "Jack s colou": "🥃",
+            "Moscow Mule": "🍸",
+            "Gin-Tonic": "🍸",
+            "Mojito": "🍹",
+            "Coca-Cola": "🥤",
+            "Sprite": "🥤",
+            "Red Bull": "🪽",
+            "Prosecco": "🍾",
+            "Pivo sud 30 l": "🍺",
+            "Pivo sud 50 l": "🍺"
+        };
+
         function loadStock() {
             const container = document.getElementById("sklad-items");
             container.innerHTML = "";
             Object.keys(sklad).forEach(itemName => {
-                const formGroup = document.createElement("div");
-                formGroup.classList.add("form-group");
-                const label = document.createElement("label");
-                label.textContent = `${itemName} (${sklad[itemName]} ks skladem)`;
+                const item = document.createElement("div");
+                item.classList.add("item");
+
+                const icon = document.createElement("div");
+                icon.classList.add("item-icon");
+                icon.textContent = icons[itemName] || "📦";
+
+                const name = document.createElement("div");
+                name.classList.add("item-name");
+                name.textContent = `${itemName} (${sklad[itemName]} ks skladem)`;
+
                 const input = document.createElement("input");
                 input.type = "number";
                 input.value = sklad[itemName];
+                input.classList.add("item-input");
                 input.id = `${itemName}-stock`;
-                formGroup.appendChild(label);
-                formGroup.appendChild(input);
-                container.appendChild(formGroup);
+
+                item.appendChild(icon);
+                item.appendChild(name);
+                item.appendChild(input);
+
+                container.appendChild(item);
             });
         }
 
