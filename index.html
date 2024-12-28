@@ -19,7 +19,7 @@
             margin: 20px auto;
             background: #fff;
             border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             padding: 20px;
             box-sizing: border-box;
@@ -27,32 +27,69 @@
 
         h1 {
             text-align: center;
-            font-size: 28px;
+            font-size: 32px;
             margin-bottom: 20px;
             color: #ff4e50;
             text-transform: uppercase;
         }
 
-        .form-group {
-            margin-bottom: 15px;
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .form-group label {
-            display: block;
-            font-size: 16px;
+        .beer {
+            background: linear-gradient(135deg, #f3a683, #f7d794);
+        }
+
+        .cocktail {
+            background: linear-gradient(135deg, #786fa6, #a29bfe);
+        }
+
+        .softdrink {
+            background: linear-gradient(135deg, #63cdda, #81ecec);
+        }
+
+        .item-icon {
+            font-size: 28px;
+            color: #fff;
+        }
+
+        .item-name {
+            flex: 1;
+            margin-left: 15px;
+            font-size: 18px;
             font-weight: bold;
-            margin-bottom: 8px;
+            color: #fff;
         }
 
-        .form-group input,
-        .form-group select {
-            width: 100%;
+        .item-input {
+            width: 80px;
             font-size: 16px;
-            padding: 12px;
+            padding: 5px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .invoice {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .invoice h2 {
+            text-align: center;
+            font-size: 24px;
             margin-bottom: 10px;
+            color: #333;
         }
 
         button {
@@ -69,6 +106,7 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
         button:hover {
@@ -87,9 +125,32 @@
                 <option value="pool">Amazing Pool</option>
             </select>
         </div>
+
+        <!-- Wellness a CityTax -->
+        <div class="form-group">
+            <label for="wellness">Wellness (€):</label>
+            <input type="number" id="wellness" value="0" min="0" class="item-input">
+        </div>
+        <div class="form-group">
+            <label for="guests">Počet hostů (pro městskou daň):</label>
+            <input type="number" id="guests" value="0" min="0" class="item-input">
+        </div>
+        <div class="form-group">
+            <label for="nights">Počet nocí (pro městskou daň):</label>
+            <input type="number" id="nights" value="0" min="0" class="item-input">
+        </div>
+
+        <!-- Položky skladu -->
         <div id="items"></div>
         <button onclick="generateInvoice()">Generovat fakturu</button>
         <button onclick="window.location.href='sklad.html'">Přejít do skladu</button>
+
+        <!-- Faktura -->
+        <div id="invoice" class="invoice" style="display: none;">
+            <h2>Faktura</h2>
+            <div id="invoice-details"></div>
+            <div id="invoice-total"></div>
+        </div>
     </div>
 
     <script>
@@ -108,37 +169,101 @@
             "Pivo sud 50 l": 5,
         };
 
+        const icons = {
+            "Budvar": "🍺",
+            "Malibu": "🍹",
+            "Jack s colou": "🥃",
+            "Moscow Mule": "🍸",
+            "Gin-Tonic": "🍸",
+            "Mojito": "🍹",
+            "Coca-Cola": "🥤",
+            "Sprite": "🥤",
+            "Red Bull": "🪽",
+            "Prosecco": "🍾",
+            "Pivo sud 30 l": "🍺",
+            "Pivo sud 50 l": "🍺"
+        };
+
+        const categories = {
+            "Budvar": "beer",
+            "Pivo sud 30 l": "beer",
+            "Pivo sud 50 l": "beer",
+            "Malibu": "cocktail",
+            "Jack s colou": "cocktail",
+            "Moscow Mule": "cocktail",
+            "Gin-Tonic": "cocktail",
+            "Mojito": "cocktail",
+            "Prosecco": "cocktail",
+            "Coca-Cola": "softdrink",
+            "Sprite": "softdrink",
+            "Red Bull": "softdrink",
+        };
+
         function loadItems() {
             const container = document.getElementById("items");
             container.innerHTML = "";
             Object.keys(sklad).forEach(itemName => {
-                const formGroup = document.createElement("div");
-                formGroup.classList.add("form-group");
-                const label = document.createElement("label");
-                label.textContent = `${itemName} (${sklad[itemName]} ks skladem)`;
+                const item = document.createElement("div");
+                item.classList.add("item");
+                item.classList.add(categories[itemName] || "default");
+
+                const icon = document.createElement("div");
+                icon.classList.add("item-icon");
+                icon.textContent = icons[itemName] || "📦";
+
+                const name = document.createElement("div");
+                name.classList.add("item-name");
+                name.textContent = `${itemName} (${sklad[itemName]} ks skladem)`;
+
                 const input = document.createElement("input");
                 input.type = "number";
                 input.min = "0";
                 input.value = "0";
+                input.classList.add("item-input");
                 input.id = `${itemName}-count`;
-                formGroup.appendChild(label);
-                formGroup.appendChild(input);
-                container.appendChild(formGroup);
+
+                item.appendChild(icon);
+                item.appendChild(name);
+                item.appendChild(input);
+
+                container.appendChild(item);
             });
         }
 
         function generateInvoice() {
             const vila = document.getElementById("vila").value;
+            const wellness = parseFloat(document.getElementById("wellness").value) || 0;
+            const guests = parseInt(document.getElementById("guests").value) || 0;
+            const nights = parseInt(document.getElementById("nights").value) || 0;
+
+            let details = "";
+            let total = 0;
+
+            // Wellness
+            details += `<p>Wellness: €${wellness.toFixed(2)}</p>`;
+            total += wellness;
+
+            // City Tax
+            const cityTax = guests * nights * 2; // 2 € za osobu a noc
+            details += `<p>City Tax: €${cityTax.toFixed(2)}</p>`;
+            total += cityTax;
+
+            // Položky skladu
             Object.keys(sklad).forEach(itemName => {
                 const input = document.getElementById(`${itemName}-count`);
                 const count = parseInt(input.value) || 0;
                 if (count > 0) {
                     sklad[itemName] = Math.max(0, sklad[itemName] - count);
+                    const price = count * 10; // Příklad ceny: 10 € za kus
+                    details += `<p>${count}x ${itemName}: €${price.toFixed(2)}</p>`;
+                    total += price;
                 }
             });
+
             localStorage.setItem("sklad", JSON.stringify(sklad));
-            alert(`Faktura pro vilu ${vila} byla vygenerována a sklad aktualizován.`);
-            loadItems();
+            document.getElementById("invoice-details").innerHTML = details;
+            document.getElementById("invoice-total").innerHTML = `<h3>Celkem: €${total.toFixed(2)}</h3>`;
+            document.getElementById("invoice").style.display = "block";
         }
 
         window.onload = loadItems;
