@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sklad</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #56ab2f;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            max-width: 320px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #2980b9, #27ae60);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sklad</h1>
+        <div id="sklad-items"></div>
+        <button onclick="updateStock()">Uložit změny</button>
+        <button onclick="window.location.href='index.html'">Zpět na hlavní stránku</button>
+    </div>
+
+    <script>
+        const sklad = JSON.parse(localStorage.getItem("sklad")) || {
+            "Budvar": 100,
+            "Malibu": 50,
+            "Jack s colou": 50,
+            "Moscow Mule": 30,
+            "Gin-Tonic": 50,
+            "Mojito": 30,
+            "Coca-Cola": 100,
+            "Sprite": 100,
+            "Red Bull": 100,
+            "Prosecco": 20,
+            "Pivo sud 30 l": 10,
+            "Pivo sud 50 l": 5,
+        };
+
+        function loadStock() {
+            const container = document.getElementById("sklad-items");
+            container.innerHTML = "";
+            Object.keys(sklad).forEach(itemName => {
+                const formGroup = document.createElement("div");
+                formGroup.classList.add("form-group");
+                const label = document.createElement("label");
+                label.textContent = `${itemName} (${sklad[itemName]} ks skladem)`;
+                const input = document.createElement("input");
+                input.type = "number";
+                input.value = sklad[itemName];
+                input.id = `${itemName}-stock`;
+                formGroup.appendChild(label);
+                formGroup.appendChild(input);
+                container.appendChild(formGroup);
+            });
+        }
+
+        function updateStock() {
+            Object.keys(sklad).forEach(itemName => {
+                const input = document.getElementById(`${itemName}-stock`);
+                sklad[itemName] = parseInt(input.value) || 0;
+            });
+            localStorage.setItem("sklad", JSON.stringify(sklad));
+            alert("Sklad byl aktualizován!");
+        }
+
+        window.onload = loadStock;
+    </script>
+</body>
+</html>
