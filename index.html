@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Bar Management</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <title>Sklad</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            color: #333;
-            background: linear-gradient(135deg, #ff4e50, #f9d423);
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
         }
 
         .container {
@@ -30,7 +28,7 @@
             text-align: center;
             font-size: 28px;
             margin-bottom: 20px;
-            color: #ff4e50;
+            color: #56ab2f;
             text-transform: uppercase;
         }
 
@@ -45,15 +43,13 @@
             margin-bottom: 8px;
         }
 
-        .form-group input,
-        .form-group select {
+        .form-group input {
             width: 100%;
             font-size: 16px;
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-sizing: border-box;
-            margin-bottom: 10px;
         }
 
         button {
@@ -70,277 +66,68 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            transition: background 0.3s;
         }
 
         button:hover {
             background: linear-gradient(135deg, #2980b9, #27ae60);
         }
-
-        .invoice {
-            background-color: #ecf0f1;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            font-size: 16px;
-        }
-
-        .invoice-header h2 {
-            margin-bottom: 10px;
-            font-size: 22px;
-            text-align: center;
-            color: #2c3e50;
-            text-transform: uppercase;
-        }
-
-        .invoice-details p {
-            margin: 5px 0;
-            font-size: 16px;
-        }
-
-        .invoice-total p {
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .paid-cash {
-            border: 2px solid #27ae60;
-            background-color: #ecf9ec;
-        }
-
-        .paid-card {
-            border: 2px solid #3498db;
-            background-color: #eaf4fb;
-        }
-
-        .unpaid {
-            border: 2px solid #e74c3c;
-            background-color: #fceeee;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 id="villa-name">Oh Yeah Villa</h1>
-        <div class="form-group">
-            <label for="vila">Výběr vily:</label>
-            <select id="vila" onchange="updateVilla()">
-                <option value="ohyeah">Oh Yeah Villa</option>
-                <option value="castle">The Little Castle</option>
-                <option value="pool">Amazing Pool</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="guests">Počet hostů:</label>
-            <input type="number" id="guests" min="1" value="1">
-        </div>
-
-        <div class="form-group">
-            <label for="nights">Počet nocí:</label>
-            <input type="number" id="nights" min="1" value="1">
-        </div>
-
-        <div class="form-group">
-            <label for="wellness">Wellness (€):</label>
-            <input type="number" id="wellness" min="0" value="0">
-        </div>
-
-        <div id="items"></div>
-
-        <div class="form-group">
-            <label for="currency">Zobrazit částky v:</label>
-            <select id="currency">
-                <option value="czk">Kč</option>
-                <option value="eur">€</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="payment">Stav platby:</label>
-            <select id="payment" onchange="setPaymentStatus()">
-                <option value="unpaid">Neplaceno</option>
-                <option value="paid-cash">Placeno cash</option>
-                <option value="paid-card">Placeno kartou</option>
-            </select>
-        </div>
-
-        <button onclick="generateInvoice()">Generovat fakturu</button>
-        <button onclick="downloadInvoice()">Stáhnout fakturu jako obrázek</button>
-
-        <div id="invoice" class="invoice unpaid" style="display: none;">
-            <div class="invoice-header">
-                <h2 id="invoiceVillaName"></h2>
-                <p id="invoiceDate"></p>
-            </div>
-            <div class="invoice-details" id="invoiceDetails"></div>
-            <div class="invoice-total" id="invoiceTotal"></div>
-            <div id="paymentStatus" class="payment-status"></div>
-        </div>
+        <h1>Sklad</h1>
+        <div id="sklad-items"></div>
+        <button onclick="updateStock()">Uložit změny</button>
+        <button onclick="location.href='index.html'">Zpět na hlavní stránku</button>
     </div>
 
     <script>
-        const exchangeRate = 25; // Kurz měny
-        const itemsData = {
-            ohyeah: {
-                "Budvar (59 Kč)": 59,
-                "Malibu (99 Kč)": 99,
-                "Jack s colou (99 Kč)": 99,
-                "Moscow Mule (99 Kč)": 99,
-                "Gin-Tonic (99 Kč)": 99,
-                "Mojito (99 Kč)": 99,
-                "Prosecco (390 Kč)": 390,
-                "Pivo sud 30 l (125 €)": 125,
-                "Pivo sud 50 l (175 €)": 175,
-                "Plyn (12 €)": 12
-            },
-            castle: {
-                "Budvar (59 Kč)": 59,
-                "Malibu (99 Kč)": 99,
-                "Jack s colou (99 Kč)": 99,
-                "Gin-Tonic (99 Kč)": 99,
-                "Mojito (99 Kč)": 99,
-                "Prosecco (390 Kč)": 390,
-                "Pivo sud 30 l (125 €)": 125,
-                "Pivo sud 50 l (175 €)": 175,
-                "Plyn (12 €)": 12
-            },
-            pool: {
-                "Budvar (59 Kč)": 59,
-                "Coca-Cola (32 Kč)": 32,
-                "Sprite (32 Kč)": 32,
-                "Red Bull (59 Kč)": 59,
-                "Malibu (99 Kč)": 99,
-                "Jack s colou (99 Kč)": 99,
-                "Gin-Tonic (99 Kč)": 99,
-                "Mojito (99 Kč)": 99,
-                "Prosecco (390 Kč)": 390,
-                "Pivo sud 30 l (125 €)": 125,
-                "Pivo sud 50 l (175 €)": 175,
-                "Plyn (12 €)": 12
-            }
+        const sklad = JSON.parse(localStorage.getItem("sklad")) || {
+            "Budvar": 100,
+            "Malibu": 50,
+            "Jack s colou": 50,
+            "Moscow Mule": 30,
+            "Gin-Tonic": 50,
+            "Mojito": 30,
+            "Coca-Cola": 100,
+            "Sprite": 100,
+            "Red Bull": 100,
+            "Prosecco": 20,
+            "Pivo sud 30 l": 10,
+            "Pivo sud 50 l": 5,
         };
 
-        function updateVilla() {
-            const vila = document.getElementById("vila").value;
-            const villaNames = {
-                ohyeah: "Oh Yeah Villa",
-                castle: "The Little Castle",
-                pool: "Amazing Pool"
-            };
-
-            document.body.className = vila;
-            document.getElementById("villa-name").textContent = villaNames[vila];
-            updateItems(vila);
-        }
-
-        function updateItems(vila) {
-            const items = itemsData[vila];
-            const container = document.getElementById("items");
+        function loadStock() {
+            const container = document.getElementById("sklad-items");
             container.innerHTML = "";
-
-            Object.keys(items).forEach((itemName) => {
+            Object.keys(sklad).forEach(itemName => {
                 const formGroup = document.createElement("div");
                 formGroup.classList.add("form-group");
-
                 const label = document.createElement("label");
-                label.textContent = itemName;
-
+                label.textContent = `${itemName} (${sklad[itemName]} ks skladem)`;
                 const input = document.createElement("input");
                 input.type = "number";
-                input.placeholder = "Zadejte počet";
-                input.min = "0";
-                input.id = `${itemName}-count`;
-
+                input.value = sklad[itemName];
+                input.id = `${itemName}-stock`;
                 formGroup.appendChild(label);
                 formGroup.appendChild(input);
                 container.appendChild(formGroup);
             });
         }
 
-        function setPaymentStatus() {
-            const payment = document.getElementById("payment").value;
-            const invoice = document.getElementById("invoice");
-
-            if (payment === "paid-cash") {
-                invoice.className = "invoice paid-cash";
-                document.getElementById("paymentStatus").textContent = "Stav platby: Placeno cash";
-            } else if (payment === "paid-card") {
-                invoice.className = "invoice paid-card";
-                document.getElementById("paymentStatus").textContent = "Stav platby: Placeno kartou";
-            } else {
-                invoice.className = "invoice unpaid";
-                document.getElementById("paymentStatus").textContent = "Stav platby: Neplaceno";
-            }
-        }
-
-        function generateInvoice() {
-            const vila = document.getElementById("vila").value;
-            const villaNames = {
-                ohyeah: "Oh Yeah Villa",
-                castle: "The Little Castle",
-                pool: "Amazing Pool"
-            };
-
-            const guests = parseInt(document.getElementById("guests").value) || 0;
-            const nights = parseInt(document.getElementById("nights").value) || 0;
-            const wellness = parseFloat(document.getElementById("wellness").value) || 0;
-            const currency = document.getElementById("currency").value;
-
-            const items = itemsData[vila];
-            const invoiceDetails = document.getElementById("invoiceDetails");
-            const invoiceTotal = document.getElementById("invoiceTotal");
-
-            let subtotal = 0;
-            let details = "";
-
-            // Wellness
-            const wellnessCost = currency === "eur" ? wellness : wellness * exchangeRate;
-            subtotal += wellnessCost;
-            details += `<p>Wellness: ${wellnessCost.toFixed(2)} ${currency}</p>`;
-
-            // Přidání položek
-            Object.keys(items).forEach((itemName) => {
-                const count = parseInt(document.getElementById(`${itemName}-count`)?.value, 10) || 0;
-                if (count > 0) {
-                    const price = items[itemName];
-                    const itemTotal = itemName.includes("€")
-                        ? count * price * (currency === "czk" ? exchangeRate : 1)
-                        : count * price * (currency === "eur" ? 1 / exchangeRate : 1);
-
-                    subtotal += itemTotal;
-                    details += `<p>${count}x ${itemName}: ${itemTotal.toFixed(2)} ${currency}</p>`;
+        function updateStock() {
+            Object.keys(sklad).forEach(itemName => {
+                const input = document.getElementById(`${itemName}-stock`);
+                if (input) {
+                    sklad[itemName] = parseInt(input.value) || 0;
                 }
             });
-
-            // Městská daň
-            const cityTax = guests * nights * 2;
-            const cityTaxCost = currency === "eur" ? cityTax : cityTax * exchangeRate;
-            subtotal += cityTaxCost;
-            details += `<p>City tax: ${cityTaxCost.toFixed(2)} ${currency}</p>`;
-
-            // Výsledek
-            document.getElementById("invoiceVillaName").textContent = villaNames[vila];
-            document.getElementById("invoiceDate").textContent = `Datum: ${new Date().toLocaleDateString("cs-CZ")}`;
-            invoiceDetails.innerHTML = details;
-            invoiceTotal.innerHTML = `<p>Total: ${subtotal.toFixed(2)} ${currency}</p>`;
-            document.getElementById("invoice").style.display = "block";
+            localStorage.setItem("sklad", JSON.stringify(sklad));
+            alert("Sklad aktualizován!");
+            loadStock();
         }
 
-        function downloadInvoice() {
-            const invoice = document.getElementById("invoice");
-            html2canvas(invoice).then(canvas => {
-                const link = document.createElement("a");
-                link.download = "download.png";
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
-
-        window.onload = updateVilla;
+        window.onload = loadStock;
     </script>
 </body>
 </html>
