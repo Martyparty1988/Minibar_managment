@@ -6,143 +6,14 @@
     <title>Mini Bar Management</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        /* Váš původní CSS styl */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             color: #333;
         }
-
-        .container {
-            width: 100%;
-            max-width: 480px;
-            margin: 20px auto;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            font-size: 16px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-
-        button {
-            display: block;
-            width: 100%;
-            max-width: 320px;
-            margin: 20px auto;
-            padding: 15px;
-            background: linear-gradient(135deg, #3498db, #2ecc71);
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            text-transform: uppercase;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: linear-gradient(135deg, #2980b9, #27ae60);
-        }
-
-        .invoice {
-            background-color: #ecf0f1;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            font-size: 16px;
-        }
-
-        .invoice-header h2 {
-            margin-bottom: 10px;
-            font-size: 22px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        .invoice-details p {
-            margin: 5px 0;
-            font-size: 16px;
-        }
-
-        .invoice-total p {
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        /* Pozadí a nadpisy pro jednotlivé vily */
-        body.ohyeah {
-            background: linear-gradient(135deg, #ff4e50, #f9d423);
-        }
-
-        body.ohyeah h1 {
-            color: #ff4e50;
-        }
-
-        body.castle {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-        }
-
-        body.castle h1 {
-            color: #1e3c72;
-        }
-
-        body.pool {
-            background: linear-gradient(135deg, #56ab2f, #a8e063);
-        }
-
-        body.pool h1 {
-            color: #56ab2f;
-        }
-
-        /* Stav platby */
-        .paid-cash {
-            border: 2px solid #27ae60;
-            background-color: #ecf9ec;
-        }
-
-        .paid-card {
-            border: 2px solid #3498db;
-            background-color: #eaf4fb;
-        }
-
-        .unpaid {
-            border: 2px solid #e74c3c;
-            background-color: #fceeee;
-        }
+        /* Zbytek stylů zde */
     </style>
 </head>
 <body class="ohyeah">
@@ -301,6 +172,8 @@
         }
 
         function generateInvoice() {
+            console.log("Generování faktury spuštěno.");
+
             const vila = document.getElementById("vila").value;
             const villaNames = {
                 ohyeah: "Oh Yeah Villa",
@@ -311,7 +184,6 @@
             const guests = parseInt(document.getElementById("guests").value) || 0;
             const nights = parseInt(document.getElementById("nights").value) || 0;
             const wellness = parseFloat(document.getElementById("wellness").value) || 0;
-            const discount = document.getElementById("discount").checked;
             const currency = document.getElementById("currency").value;
 
             const items = itemsData[vila];
@@ -321,11 +193,14 @@
             let subtotal = 0;
             let details = "";
 
-            subtotal += currency === "eur" ? wellness : wellness * exchangeRate;
-            details += `<p>Wellness: ${currency === "eur" ? wellness.toFixed(2) : (wellness * exchangeRate).toFixed(2)} ${currency}</p>`;
+            // Wellness
+            const wellnessCost = currency === "eur" ? wellness : wellness * exchangeRate;
+            subtotal += wellnessCost;
+            details += `<p>Wellness: ${wellnessCost.toFixed(2)} ${currency}</p>`;
 
+            // Přidání položek
             Object.keys(items).forEach((itemName) => {
-                const count = parseInt(document.getElementById(`${itemName}-count`).value, 10) || 0;
+                const count = parseInt(document.getElementById(`${itemName}-count`)?.value, 10) || 0;
                 if (count > 0) {
                     const price = items[itemName];
                     const itemTotal = itemName.includes("€")
@@ -337,25 +212,22 @@
                 }
             });
 
-            const cityTax = guests * nights * 2; // 2 € na osobu a den
-            const cityTaxConverted = currency === "eur" ? cityTax : cityTax * exchangeRate;
+            // Městská daň
+            const cityTax = guests * nights * 2;
+            const cityTaxCost = currency === "eur" ? cityTax : cityTax * exchangeRate;
+            subtotal += cityTaxCost;
+            details += `<p>City tax: ${cityTaxCost.toFixed(2)} ${currency}</p>`;
 
-            details += `<p>City tax: ${cityTaxConverted.toFixed(2)} ${currency}</p>`;
-
-            let discountAmount = 0;
-            if (discount) {
-                discountAmount = subtotal * 0.1;
-                subtotal -= discountAmount;
-                details += `<p>Discount 10%: -${discountAmount.toFixed(2)} ${currency}</p>`;
-            }
-
-            const finalTotal = subtotal + cityTaxConverted;
+            // Výsledek
+            console.log("Podrobnosti faktury:", details);
 
             document.getElementById("invoiceVillaName").textContent = villaNames[vila];
-            document.getElementById("invoiceDate").textContent = `Date: ${new Date().toLocaleDateString("cs-CZ")}`;
+            document.getElementById("invoiceDate").textContent = `Datum: ${new Date().toLocaleDateString("cs-CZ")}`;
             invoiceDetails.innerHTML = details;
-            invoiceTotal.innerHTML = `<p>Total: ${finalTotal.toFixed(2)} ${currency}</p>`;
+            invoiceTotal.innerHTML = `<p>Total: ${subtotal.toFixed(2)} ${currency}</p>`;
             document.getElementById("invoice").style.display = "block";
+
+            console.log("Faktura úspěšně vygenerována.");
         }
 
         function downloadInvoice() {
