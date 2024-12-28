@@ -97,8 +97,8 @@
 
     <script>
         const sklad = JSON.parse(localStorage.getItem("sklad")) || {
-            "Budvar": 100,
-            "Malibu": 50,
+            "Budvar": 50,
+            "Malibu": 48,
             "Jack s colou": 50,
             "Moscow Mule": 30,
             "Gin-Tonic": 50,
@@ -109,6 +109,8 @@
             "Prosecco": 20,
             "Pivo sud 30 l": 10,
             "Pivo sud 50 l": 5,
+            "Plyn": 12,
+            "Gril": 20
         };
 
         const icons = {
@@ -123,7 +125,9 @@
             "Red Bull": "🪽",
             "Prosecco": "🍾",
             "Pivo sud 30 l": "🍺",
-            "Pivo sud 50 l": "🍺"
+            "Pivo sud 50 l": "🍺",
+            "Plyn": "🔥",
+            "Gril": "🍖"
         };
 
         function loadStock() {
@@ -139,7 +143,7 @@
 
                 const name = document.createElement("div");
                 name.classList.add("item-name");
-                name.textContent = `${itemName} (${sklad[itemName]} ks skladem)`;
+                name.textContent = itemName;
 
                 const input = document.createElement("input");
                 input.type = "number";
