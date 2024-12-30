@@ -24,38 +24,17 @@
 
         h1 {
             text-align: center;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             color: #ff4e50;
-            margin-bottom: 20px;
-        }
-
-        .villa-selection {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .villa-selection button {
-            background: #ff4e50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            margin: 0 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .villa-selection button:hover {
-            background: #ff6f61;
+            margin-bottom: 10px;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
         }
 
         .grid-item {
@@ -63,8 +42,8 @@
             width: 100%;
             padding-top: 100%; /* Čtvercový tvar */
             background: linear-gradient(135deg, #ffeaa7, #fab1a0);
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -73,44 +52,44 @@
         }
 
         .grid-item:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
 
         .grid-item img {
-            width: 60%;
+            width: 60%; /* Menší velikost ikon */
             height: 60%;
             object-fit: contain;
         }
 
         .bubble {
             position: absolute;
-            top: 10%;
-            right: 10%;
+            top: 5%;
+            right: 5%;
             background: red;
             color: white;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: bold;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .summary {
-            margin-top: 20px;
-            font-size: 18px;
+            margin-top: 10px;
+            font-size: 16px;
             font-weight: bold;
             text-align: center;
         }
 
         button {
-            margin-top: 20px;
+            margin-top: 15px;
             width: 100%;
-            padding: 15px;
-            font-size: 18px;
+            padding: 10px;
+            font-size: 16px;
             color: white;
             background: #ff4e50;
             border: none;
@@ -126,13 +105,6 @@
 <body>
     <div class="container">
         <h1>Mini Bar Management</h1>
-
-        <!-- Výběr vily -->
-        <div class="villa-selection">
-            <button onclick="selectVilla('ohyeah')">OH YEAH vila</button>
-            <button onclick="selectVilla('pool')">Amazing Pool vila</button>
-            <button onclick="selectVilla('castle')">Little Castle vila</button>
-        </div>
 
         <!-- Grid pro položky minibaru -->
         <div class="grid" id="items"></div>
@@ -150,20 +122,13 @@
         let inventory = {};
         let guestsCount = 0;
         let nightsCount = 0;
-        let selectedVilla = 'ohyeah';
 
         // Načtení dat z JSON
         async function loadJSON() {
             const response = await fetch('data.json');
             const data = await response.json();
             inventory = data;
-            loadItems(selectedVilla);
-        }
-
-        // Změna vily
-        function selectVilla(villa) {
-            selectedVilla = villa;
-            loadItems(villa);
+            loadItems('ohyeah'); // Default vila
         }
 
         // Načtení položek z JSON
