@@ -9,7 +9,7 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #ff4e50, #f9d423);
+            background: #f9f9f9;
             color: #333;
         }
 
@@ -29,28 +29,33 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
             gap: 10px;
-            margin-top: 10px;
         }
 
         .grid-item {
             position: relative;
+            width: 100px; /* Pevná šířka */
+            height: 100px; /* Pevná výška */
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
         }
 
         .grid-item img {
-            width: 100%;
+            max-width: 80%;
+            max-height: 80%;
             object-fit: contain;
         }
 
         .bubble {
             position: absolute;
-            top: -10px;
-            right: -10px;
+            top: 5px;
+            right: 5px;
             background: red;
             color: white;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
             border-radius: 50%;
             width: 20px;
@@ -58,13 +63,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            visibility: hidden; /* Zobrazí se až při kliknutí */
         }
 
-        .summary {
-            margin-top: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            text-align: center;
+        .bubble.active {
+            visibility: visible;
         }
 
         button {
@@ -88,13 +91,8 @@
     <div class="container">
         <h1>Mini Bar Management</h1>
 
-        <!-- Grid pro položky minibaru -->
+        <!-- Grid pro produkty -->
         <div class="grid" id="items"></div>
-
-        <!-- Shrnutí -->
-        <div class="summary" id="summary">
-            Počet hostů: 0 | Počet nocí: 0
-        </div>
 
         <!-- Tlačítko -->
         <button onclick="generateInvoice()">Generovat fakturu</button>
@@ -102,73 +100,42 @@
 
     <script>
         let inventory = {};
-        let guestsCount = 0;
-        let nightsCount = 0;
+        let villa = 'ohyeah'; // Výchozí vila
 
         // Načtení dat z JSON
         async function loadJSON() {
             const response = await fetch('data.json');
             const data = await response.json();
             inventory = data;
-            loadItems('ohyeah'); // Default vila
+            loadItems(villa);
         }
 
         // Načtení položek z JSON
         function loadItems(villa) {
             const container = document.getElementById("items");
-            container.innerHTML = "";
+            container.innerHTML = '';
 
-            // Položka hosté
-            container.innerHTML += `
-                <div class="grid-item" onclick="incrementGuests()">
-                    <img src="images/guests.png" alt="Počet hostů">
-                    <div class="bubble" id="guest-count">0</div>
-                </div>`;
-
-            // Položka noci
-            container.innerHTML += `
-                <div class="grid-item" onclick="incrementNights()">
-                    <img src="images/nights.png" alt="Počet nocí">
-                    <div class="bubble" id="night-count">0</div>
-                </div>`;
-
-            // Ostatní položky
             inventory[villa].forEach((item, index) => {
                 container.innerHTML += `
-                    <div class="grid-item" onclick="incrementItem(${index}, '${villa}')">
+                    <div class="grid-item" onclick="incrementItem(${index})">
                         <img src="images/${item.img}" alt="${item.name}">
                         <div class="bubble" id="item-count-${index}">0</div>
                     </div>`;
             });
         }
 
-        // Změna počtu hostů
-        function incrementGuests() {
-            guestsCount++;
-            document.getElementById("guest-count").textContent = guestsCount;
-            updateSummary();
-        }
-
-        function incrementNights() {
-            nightsCount++;
-            document.getElementById("night-count").textContent = nightsCount;
-            updateSummary();
-        }
-
         // Přidání položek
-        function incrementItem(index, villa) {
-            const count = document.getElementById(`item-count-${index}`);
-            count.textContent = parseInt(count.textContent) + 1;
-        }
-
-        // Aktualizace shrnutí
-        function updateSummary() {
-            document.getElementById("summary").textContent = `Počet hostů: ${guestsCount} | Počet nocí: ${nightsCount}`;
+        function incrementItem(index) {
+            const bubble = document.getElementById(`item-count-${index}`);
+            let count = parseInt(bubble.textContent);
+            count++;
+            bubble.textContent = count;
+            bubble.classList.add('active'); // Zobrazí bublinku
         }
 
         // Generování faktury
         function generateInvoice() {
-            window.location.href = "faktura.html";
+            window.location.href = 'faktura.html';
         }
 
         window.onload = loadJSON;
