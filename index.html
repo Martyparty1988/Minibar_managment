@@ -24,7 +24,26 @@
             font-size: 24px;
             font-weight: bold;
             color: #ff4e50;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .villa-selection {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .villa-selection button {
+            background: #ff4e50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .villa-selection button:hover {
+            background: #ff6f61;
         }
 
         .grid {
@@ -35,8 +54,8 @@
 
         .grid-item {
             position: relative;
-            width: 100px; /* Pevná šířka */
-            height: 100px; /* Pevná výška */
+            width: 100px;
+            height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -70,6 +89,23 @@
             visibility: visible;
         }
 
+        .summary {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .discount {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .discount label {
+            font-size: 14px;
+            cursor: pointer;
+        }
+
         button {
             margin-top: 15px;
             width: 100%;
@@ -91,8 +127,26 @@
     <div class="container">
         <h1>Mini Bar Management</h1>
 
+        <!-- Výběr vily -->
+        <div class="villa-selection">
+            <button onclick="selectVilla('ohyeah')">OH YEAH vila</button>
+            <button onclick="selectVilla('pool')">Amazing Pool vila</button>
+            <button onclick="selectVilla('castle')">Little Castle vila</button>
+        </div>
+
         <!-- Grid pro produkty -->
         <div class="grid" id="items"></div>
+
+        <!-- 10% sleva -->
+        <div class="discount">
+            <input type="checkbox" id="discount" onchange="toggleDiscount()">
+            <label for="discount">Aplikovat 10% slevu (kromě City Tax)</label>
+        </div>
+
+        <!-- Shrnutí -->
+        <div class="summary" id="summary">
+            Počet hostů: 0 | Počet nocí: 0
+        </div>
 
         <!-- Tlačítko -->
         <button onclick="generateInvoice()">Generovat fakturu</button>
@@ -100,13 +154,23 @@
 
     <script>
         let inventory = {};
-        let villa = 'ohyeah'; // Výchozí vila
+        let selectedVilla = 'ohyeah'; // Výchozí vila
+        let guestsCount = 0;
+        let nightsCount = 0;
+        let discountApplied = false;
 
         // Načtení dat z JSON
         async function loadJSON() {
             const response = await fetch('data.json');
             const data = await response.json();
             inventory = data;
+            loadItems(selectedVilla);
+        }
+
+        // Výběr vily
+        function selectVilla(villa) {
+            selectedVilla = villa;
+            localStorage.setItem('selectedVilla', villa); // Uloží výběr vily
             loadItems(villa);
         }
 
@@ -133,8 +197,26 @@
             bubble.classList.add('active'); // Zobrazí bublinku
         }
 
+        // Přepínání slevy
+        function toggleDiscount() {
+            discountApplied = document.getElementById("discount").checked;
+        }
+
         // Generování faktury
         function generateInvoice() {
+            const invoiceData = {
+                villa: selectedVilla,
+                items: inventory[selectedVilla].map((item, index) => ({
+                    name: item.name,
+                    quantity: parseInt(document.getElementById(`item-count-${index}`).textContent) || 0,
+                    priceCZK: item.priceCZK,
+                    priceEUR: item.priceEUR
+                })),
+                discountApplied,
+                guestsCount,
+                nightsCount
+            };
+            localStorage.setItem('invoice', JSON.stringify(invoiceData));
             window.location.href = 'faktura.html';
         }
 
