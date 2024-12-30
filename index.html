@@ -31,20 +31,37 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
-            padding: 10px;
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
         }
 
-        .form-group label {
-            font-weight: bold;
-        }
-
-        .form-group select, .form-group input {
+        .form-item {
+            position: relative;
             width: 100%;
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            padding-top: 100%;
+            background: linear-gradient(135deg, #81ecec, #63cdda);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .form-item img {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
         }
 
         .grid {
@@ -57,7 +74,7 @@
         .grid-item {
             position: relative;
             width: 100%;
-            padding-top: 100%; /* Čtvercový tvar */
+            padding-top: 100%;
             background: linear-gradient(135deg, #ffeaa7, #fab1a0);
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -95,7 +112,7 @@
             border-radius: 50%;
             width: 24px;
             height: 24px;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
         }
@@ -104,10 +121,7 @@
             margin-top: 20px;
             font-size: 18px;
             font-weight: bold;
-        }
-
-        .button-group {
-            margin-top: 20px;
+            text-align: center;
         }
 
         button {
@@ -130,104 +144,80 @@
     <div class="container">
         <h1>Mini Bar Management</h1>
 
+        <!-- Formulářové prvky -->
         <div class="form-group">
-            <label for="villa">Vyberte vilu:</label>
-            <select id="villa" onchange="changeVilla()">
-                <option value="ohyeah">Oh Yeah Villa</option>
-                <option value="pool">Amazing Pool Villa</option>
-                <option value="castle">Little Castle</option>
-            </select>
+            <div class="form-item" onclick="toggleCityTax()">
+                <img src="images/citytex.png" alt="City Tax">
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="currency">Vyberte měnu:</label>
-            <select id="currency" onchange="updateInvoice()">
-                <option value="CZK">CZK</option>
-                <option value="EUR">EUR</option>
-            </select>
+        <!-- Rozbalovací možnosti pro City Tax -->
+        <div class="form-group" id="city-tax-options" style="display: none;">
+            <div class="form-item">
+                <img src="images/guests.png" alt="Počet hostů">
+                <input type="number" id="guests" placeholder="Počet hostů" onchange="updateCityTax()">
+            </div>
+            <div class="form-item">
+                <img src="images/nights.png" alt="Počet nocí">
+                <input type="number" id="nights" placeholder="Počet nocí" onchange="updateCityTax()">
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="guests">Počet hostů:</label>
-            <input type="number" id="guests" placeholder="Zadejte počet hostů" value="1" onchange="updateInvoice()">
-        </div>
-
-        <div class="form-group">
-            <label for="nights">Počet nocí:</label>
-            <input type="number" id="nights" placeholder="Zadejte počet nocí" value="1" onchange="updateInvoice()">
-        </div>
-
+        <!-- Grid pro minibar -->
         <div class="grid" id="items"></div>
 
-        <div class="summary" id="summary">Celková cena: 0 CZK</div>
+        <!-- Shrnutí -->
+        <div class="summary" id="summary">City Tax: 0 EUR</div>
 
-        <div class="button-group">
-            <button onclick="generateInvoice()">Generovat fakturu</button>
-        </div>
+        <!-- Tlačítka -->
+        <button onclick="generateInvoice()">Generovat fakturu</button>
     </div>
 
     <script>
-        const inventory = {
-            ohyeah: [
-                { name: "Budvar", price: 59, img: "budvar.png", currency: "CZK" },
-                { name: "Malibu", price: 99, img: "malibu.png", currency: "CZK" },
-                { name: "Jack s colou", price: 99, img: "jack_cola.png", currency: "CZK" },
-                { name: "Moscow Mule", price: 99, img: "moscow_mule.png", currency: "CZK" },
-                { name: "Gin-Tonic", price: 99, img: "gin_tonic.png", currency: "CZK" },
-                { name: "Mojito", price: 99, img: "mojito.png", currency: "CZK" },
-                { name: "Prosecco", price: 390, img: "prosecco.png", currency: "CZK" },
-                { name: "Pivo sud 30 l", price: 125, img: "pivo30.png", currency: "EUR" },
-                { name: "Pivo sud 50 l", price: 175, img: "pivo50.png", currency: "EUR" },
-                { name: "Plyn", price: 12, img: "Plyn.png", currency: "EUR" },
-                { name: "Gril", price: 20, img: "grill.png", currency: "EUR" }
-            ]
-            // Podobně definujte položky pro "pool" a "castle".
-        };
+        let inventory = {};
+        let sharedItems = {};
+        let cityTaxVisible = false;
 
-        let selectedVilla = "ohyeah";
-        const selectedItems = {};
-
-        function changeVilla() {
-            selectedVilla = document.getElementById("villa").value;
+        async function loadJSON() {
+            const response = await fetch('data.json');
+            const data = await response.json();
+            inventory = data;
+            sharedItems = data.shared;
             loadItems();
         }
 
+        function toggleCityTax() {
+            cityTaxVisible = !cityTaxVisible;
+            document.getElementById("city-tax-options").style.display = cityTaxVisible ? "grid" : "none";
+        }
+
+        function updateCityTax() {
+            const guests = parseInt(document.getElementById("guests").value) || 0;
+            const nights = parseInt(document.getElementById("nights").value) || 0;
+            const total = guests * nights * 2; // 2 € za osobu na noc
+            document.getElementById("summary").textContent = `City Tax: ${total} EUR`;
+        }
+
         function loadItems() {
+            const villa = "ohyeah"; // Default vila
             const container = document.getElementById("items");
             container.innerHTML = "";
-            inventory[selectedVilla].forEach((item, index) => {
+            inventory[villa].forEach((item, index) => {
                 container.innerHTML += `
-                    <div class="grid-item" onclick="addItem(${index})">
+                    <div class="grid-item" id="item-${index}" onclick="addItem(${index})">
                         <img src="images/${item.img}" alt="${item.name}">
-                        <div class="badge" id="badge-${index}">0</div>
+                        <div class="badge" id="badge-${index}" style="display: none;">0</div>
                     </div>`;
             });
         }
 
         function addItem(index) {
-            selectedItems[index] = (selectedItems[index] || 0) + 1;
-            document.getElementById(`badge-${index}`).textContent = selectedItems[index];
-            updateInvoice();
+            const badge = document.getElementById(`badge-${index}`);
+            badge.style.display = "flex";
+            badge.textContent = parseInt(badge.textContent || "0") + 1;
         }
 
-        function updateInvoice() {
-            const currency = document.getElementById("currency").value;
-            const guests = +document.getElementById("guests").value || 0;
-            const nights = +document.getElementById("nights").value || 0;
-
-            let total = 0;
-
-            Object.keys(selectedItems).forEach(index => {
-                const item = inventory[selectedVilla][index];
-                const itemTotal = selectedItems[index] * item.price;
-                total += currency === "EUR" && item.currency === "CZK" ? itemTotal / 25 : itemTotal;
-            });
-
-            const cityTax = guests * nights * 2;
-            document.getElementById("summary").textContent = `Celková cena: ${total.toFixed(2)} ${currency}`;
-        }
-
-        window.onload = loadItems;
+        window.onload = loadJSON;
     </script>
 </body>
 </html>
