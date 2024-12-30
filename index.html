@@ -9,271 +9,222 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            color: #333;
             background: linear-gradient(135deg, #ff4e50, #f9d423);
+            color: #333;
         }
 
         .container {
-            width: 100%;
-            max-width: 480px;
+            max-width: 800px;
             margin: 20px auto;
             background: #fff;
             border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
             padding: 20px;
-            box-sizing: border-box;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
             text-align: center;
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: #ff4e50;
-            text-transform: uppercase;
-        }
-
-        .item, .form-group {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 10px 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .wellness, .city-tax {
-            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
-        }
-
-        .beer {
-            background: linear-gradient(135deg, #f3a683, #f7d794);
-        }
-
-        .cocktail {
-            background: linear-gradient(135deg, #786fa6, #a29bfe);
-        }
-
-        .softdrink {
-            background: linear-gradient(135deg, #63cdda, #81ecec);
-        }
-
-        .utility {
-            background: linear-gradient(135deg, #fdcb6e, #ffeaa7);
-        }
-
-        .default {
-            background: linear-gradient(135deg, #bdc3c7, #2c3e50);
-        }
-
-        .item-icon {
             font-size: 28px;
-            color: #fff;
-        }
-
-        .item-name {
-            flex: 1;
-            margin-left: 15px;
-            font-size: 18px;
             font-weight: bold;
-            color: #fff;
+            color: #ff4e50;
+            margin-bottom: 20px;
         }
 
-        .item-input {
-            width: 80px;
+        .form-group {
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 8px;
             font-size: 16px;
-            padding: 5px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .grid-item {
+            position: relative;
+            width: 100%;
+            padding-top: 100%; /* Čtvercový tvar */
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .grid-item:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .grid-item img {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+        }
+
+        .badge {
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            background: red;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .button-group {
+            margin-top: 20px;
         }
 
         button {
-            display: block;
             width: 100%;
-            max-width: 320px;
-            margin: 20px auto;
-            padding: 15px;
-            background: linear-gradient(135deg, #3498db, #2ecc71);
-            color: white;
+            padding: 10px;
             font-size: 18px;
-            font-weight: bold;
-            text-transform: uppercase;
+            color: white;
+            background-color: #ff4e50;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
         button:hover {
-            background: linear-gradient(135deg, #2980b9, #27ae60);
+            background-color: #ff6f61;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Mini Bar Management</h1>
-        <!-- Výběr vily -->
-        <div class="form-group wellness">
-            <div class="item-icon">🏡</div>
-            <label for="vila" class="item-name">Výběr vily:</label>
-            <select id="vila" class="item-input">
+
+        <div class="form-group">
+            <label for="villa">Vyberte vilu:</label>
+            <select id="villa" onchange="changeVilla()">
                 <option value="ohyeah">Oh Yeah Villa</option>
-                <option value="castle">The Little Castle</option>
-                <option value="pool">Amazing Pool</option>
+                <option value="pool">Amazing Pool Villa</option>
+                <option value="castle">Little Castle</option>
             </select>
         </div>
 
-        <!-- Wellness -->
-        <div class="form-group wellness">
-            <div class="item-icon">🛁</div>
-            <label for="wellness" class="item-name">Wellness (€):</label>
-            <input type="number" id="wellness" placeholder="Zadejte částku" min="0" class="item-input">
+        <div class="form-group">
+            <label for="currency">Vyberte měnu:</label>
+            <select id="currency" onchange="updateInvoice()">
+                <option value="CZK">CZK</option>
+                <option value="EUR">EUR</option>
+            </select>
         </div>
 
-        <!-- Městská daň -->
-        <div class="form-group city-tax">
-            <div class="item-icon">🌆</div>
-            <label for="guests" class="item-name">Počet hostů:</label>
-            <input type="number" id="guests" placeholder="Zadejte počet" min="0" class="item-input">
-        </div>
-        <div class="form-group city-tax">
-            <div class="item-icon">🛏️</div>
-            <label for="nights" class="item-name">Počet nocí:</label>
-            <input type="number" id="nights" placeholder="Zadejte počet" min="0" class="item-input">
+        <div class="form-group">
+            <label for="guests">Počet hostů:</label>
+            <input type="number" id="guests" placeholder="Zadejte počet hostů" value="1" onchange="updateInvoice()">
         </div>
 
-        <!-- Položky skladu -->
-        <div id="items"></div>
-        <button onclick="generateInvoice()">Generovat fakturu</button>
-        <button onclick="window.location.href='sklad.html'">Přejít do skladu</button>
+        <div class="form-group">
+            <label for="nights">Počet nocí:</label>
+            <input type="number" id="nights" placeholder="Zadejte počet nocí" value="1" onchange="updateInvoice()">
+        </div>
 
-        <!-- Faktura -->
-        <div id="invoice" class="invoice" style="display: none;">
-            <h2>Faktura</h2>
-            <div id="invoice-details"></div>
-            <div id="invoice-total"></div>
+        <div class="grid" id="items"></div>
+
+        <div class="summary" id="summary">Celková cena: 0 CZK</div>
+
+        <div class="button-group">
+            <button onclick="generateInvoice()">Generovat fakturu</button>
         </div>
     </div>
 
     <script>
-        const sklad = JSON.parse(localStorage.getItem("sklad")) || {
-            "Budvar": 50,
-            "Malibu": 48,
-            "Jack s colou": 50,
-            "Moscow Mule": 30,
-            "Gin-Tonic": 50,
-            "Mojito": 30,
-            "Coca-Cola": 100,
-            "Sprite": 100,
-            "Red Bull": 100,
-            "Prosecco": 20,
-            "Pivo sud 30 l": 10,
-            "Pivo sud 50 l": 5,
-            "Plyn": 12,
-            "Gril": 20
+        const inventory = {
+            ohyeah: [
+                { name: "Budvar", price: 59, img: "budvar.png", currency: "CZK" },
+                { name: "Malibu", price: 99, img: "malibu.png", currency: "CZK" },
+                { name: "Jack s colou", price: 99, img: "jack_cola.png", currency: "CZK" },
+                { name: "Moscow Mule", price: 99, img: "moscow_mule.png", currency: "CZK" },
+                { name: "Gin-Tonic", price: 99, img: "gin_tonic.png", currency: "CZK" },
+                { name: "Mojito", price: 99, img: "mojito.png", currency: "CZK" },
+                { name: "Prosecco", price: 390, img: "prosecco.png", currency: "CZK" },
+                { name: "Pivo sud 30 l", price: 125, img: "pivo30.png", currency: "EUR" },
+                { name: "Pivo sud 50 l", price: 175, img: "pivo50.png", currency: "EUR" },
+                { name: "Plyn", price: 12, img: "Plyn.png", currency: "EUR" },
+                { name: "Gril", price: 20, img: "grill.png", currency: "EUR" }
+            ]
+            // Podobně definujte položky pro "pool" a "castle".
         };
 
-        const icons = {
-            "Budvar": "🍺",
-            "Malibu": "🍹",
-            "Jack s colou": "🥃",
-            "Moscow Mule": "🍸",
-            "Gin-Tonic": "🍸",
-            "Mojito": "🍹",
-            "Coca-Cola": "🥤",
-            "Sprite": "🥤",
-            "Red Bull": "🪽",
-            "Prosecco": "🍾",
-            "Pivo sud 30 l": "🍺",
-            "Pivo sud 50 l": "🍺",
-            "Plyn": "🔥",
-            "Gril": "🍖"
-        };
+        let selectedVilla = "ohyeah";
+        const selectedItems = {};
 
-        const categories = {
-            "Budvar": "beer",
-            "Pivo sud 30 l": "beer",
-            "Pivo sud 50 l": "beer",
-            "Malibu": "cocktail",
-            "Jack s colou": "cocktail",
-            "Moscow Mule": "cocktail",
-            "Gin-Tonic": "cocktail",
-            "Mojito": "cocktail",
-            "Prosecco": "cocktail",
-            "Coca-Cola": "softdrink",
-            "Sprite": "softdrink",
-            "Red Bull": "softdrink",
-            "Plyn": "utility",
-            "Gril": "utility"
-        };
+        function changeVilla() {
+            selectedVilla = document.getElementById("villa").value;
+            loadItems();
+        }
 
         function loadItems() {
             const container = document.getElementById("items");
             container.innerHTML = "";
-            Object.keys(sklad).forEach(itemName => {
-                const item = document.createElement("div");
-                item.classList.add("item");
-                item.classList.add(categories[itemName] || "default");
-
-                const icon = document.createElement("div");
-                icon.classList.add("item-icon");
-                icon.textContent = icons[itemName] || "📦";
-
-                const name = document.createElement("div");
-                name.classList.add("item-name");
-                name.textContent = `${itemName} (${sklad[itemName]} ks skladem)`;
-
-                const input = document.createElement("input");
-                input.type = "number";
-                input.min = "0";
-                input.placeholder = "Zadejte počet";
-                input.classList.add("item-input");
-                input.id = `${itemName}-count`;
-
-                item.appendChild(icon);
-                item.appendChild(name);
-                item.appendChild(input);
-
-                container.appendChild(item);
+            inventory[selectedVilla].forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="grid-item" onclick="addItem(${index})">
+                        <img src="images/${item.img}" alt="${item.name}">
+                        <div class="badge" id="badge-${index}">0</div>
+                    </div>`;
             });
         }
 
-        function generateInvoice() {
-            const vila = document.getElementById("vila").value;
-            const wellness = parseFloat(document.getElementById("wellness").value) || 0;
-            const guests = parseInt(document.getElementById("guests").value) || 0;
-            const nights = parseInt(document.getElementById("nights").value) || 0;
+        function addItem(index) {
+            selectedItems[index] = (selectedItems[index] || 0) + 1;
+            document.getElementById(`badge-${index}`).textContent = selectedItems[index];
+            updateInvoice();
+        }
 
-            let details = "";
+        function updateInvoice() {
+            const currency = document.getElementById("currency").value;
+            const guests = +document.getElementById("guests").value || 0;
+            const nights = +document.getElementById("nights").value || 0;
+
             let total = 0;
 
-            // Wellness
-            details += `<p>Wellness: €${wellness.toFixed(2)}</p>`;
-            total += wellness;
-
-            // City Tax
-            const cityTax = guests * nights * 2; // 2 € za osobu a noc
-            details += `<p>City Tax: €${cityTax.toFixed(2)}</p>`;
-            total += cityTax;
-
-            // Položky skladu
-            Object.keys(sklad).forEach(itemName => {
-                const input = document.getElementById(`${itemName}-count`);
-                const count = parseInt(input.value) || 0;
-                if (count > 0) {
-                    sklad[itemName] = Math.max(0, sklad[itemName] - count);
-                    const price = count * 10; // Příklad ceny: 10 € za kus
-                    details += `<p>${count}x ${itemName}: €${price.toFixed(2)}</p>`;
-                    total += price;
-                }
+            Object.keys(selectedItems).forEach(index => {
+                const item = inventory[selectedVilla][index];
+                const itemTotal = selectedItems[index] * item.price;
+                total += currency === "EUR" && item.currency === "CZK" ? itemTotal / 25 : itemTotal;
             });
 
-            localStorage.setItem("sklad", JSON.stringify(sklad));
-            document.getElementById("invoice-details").innerHTML = details;
-            document.getElementById("invoice-total").innerHTML = `<h3>Celkem: €${total.toFixed(2)}</h3>`;
-            document.getElementById("invoice").style.display = "block";
+            const cityTax = guests * nights * 2;
+            document.getElementById("summary").textContent = `Celková cena: ${total.toFixed(2)} ${currency}`;
         }
 
         window.onload = loadItems;
