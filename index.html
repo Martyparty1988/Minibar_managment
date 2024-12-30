@@ -16,10 +16,7 @@
         .container {
             max-width: 800px;
             margin: 20px auto;
-            background: #fff;
-            border-radius: 16px;
             padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
@@ -32,40 +29,25 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
             gap: 10px;
             margin-top: 10px;
         }
 
         .grid-item {
             position: relative;
-            width: 100%;
-            padding-top: 100%; /* Čtvercový tvar */
-            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .grid-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
 
         .grid-item img {
-            width: 60%; /* Menší velikost ikon */
-            height: 60%;
+            width: 100%;
             object-fit: contain;
         }
 
         .bubble {
             position: absolute;
-            top: 5%;
-            right: 5%;
+            top: -10px;
+            right: -10px;
             background: red;
             color: white;
             font-size: 10px;
