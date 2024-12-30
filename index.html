@@ -30,28 +30,38 @@
             margin-bottom: 20px;
         }
 
-        .form-group {
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
             margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
         }
 
-        .form-item {
+        .grid-item {
             position: relative;
-            width: 250px;
-            height: 250px;
-            background: linear-gradient(135deg, #81ecec, #63cdda);
-            border-radius: 16px;
+            width: 100%;
+            padding-top: 100%; /* Čtvercový tvar */
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .form-item img {
+        .grid-item:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .grid-item img {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
             width: 80%;
             height: 80%;
             object-fit: contain;
@@ -73,24 +83,6 @@
 
         .bubble:hover {
             transform: scale(1.1);
-        }
-
-        .bubble-left {
-            left: -40px;
-            top: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .bubble-right {
-            right: -40px;
-            top: 50%;
-            transform: translate(50%, -50%);
-        }
-
-        .bubble img {
-            width: 80%;
-            height: 80%;
-            object-fit: contain;
         }
 
         .summary {
@@ -121,6 +113,9 @@
     <div class="container">
         <h1>Mini Bar Management</h1>
 
+        <!-- Grid pro položky minibaru -->
+        <div class="grid" id="items"></div>
+
         <!-- City Tax -->
         <div class="form-group">
             <div class="form-item">
@@ -142,8 +137,37 @@
     </div>
 
     <script>
+        let inventory = {};
         let guestsCount = 0;
         let nightsCount = 0;
+
+        // Načtení dat z JSON
+        async function loadJSON() {
+            const response = await fetch('data.json');
+            const data = await response.json();
+            inventory = data;
+            loadItems('ohyeah'); // Default vila
+        }
+
+        // Načtení položek z JSON
+        function loadItems(villa) {
+            const container = document.getElementById("items");
+            container.innerHTML = "";
+            inventory[villa].forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="grid-item" onclick="addItem(${index}, '${villa}')">
+                        <img src="images/${item.img}" alt="${item.name}">
+                        <div class="bubble" id="badge-${index}" style="display: none;">0</div>
+                    </div>`;
+            });
+        }
+
+        // Přidání položky
+        function addItem(index, villa) {
+            const badge = document.getElementById(`badge-${index}`);
+            badge.style.display = "flex";
+            badge.textContent = parseInt(badge.textContent || "0") + 1;
+        }
 
         // Zvýšení počtu hostů
         function incrementGuests() {
@@ -167,6 +191,8 @@
         function generateInvoice() {
             alert("Faktura byla vygenerována!");
         }
+
+        window.onload = loadJSON;
     </script>
 </body>
 </html>
