@@ -1,0 +1,52 @@
+{
+  "ohyeah": [
+    { "name": "Budvar", "price": 59, "currency": "CZK", "img": "budvar.png" },
+    { "name": "Malibu", "price": 99, "currency": "CZK", "img": "malibu.png" },
+    { "name": "Jack s colou", "price": 99, "currency": "CZK", "img": "jack_cola.png" },
+    { "name": "Moscow Mule", "price": 99, "currency": "CZK", "img": "moscow_mule.png" },
+    { "name": "Gin-Tonic", "price": 99, "currency": "CZK", "img": "gin_tonic.png" },
+    { "name": "Mojito", "price": 99, "currency": "CZK", "img": "mojito.png" },
+    { "name": "Prosecco", "price": 390, "currency": "CZK", "img": "prosecco.png" },
+    { "name": "Pivo sud 30 l", "price": 125, "currency": "EUR", "img": "pivo30.png" },
+    { "name": "Pivo sud 50 l", "price": 175, "currency": "EUR", "img": "pivo50.png" },
+    { "name": "Plyn", "price": 12, "currency": "EUR", "img": "Plyn.png" },
+    { "name": "Gril", "price": 20, "currency": "EUR", "img": "grill.png" },
+    { "name": "Wellness", "price": "custom", "currency": "EUR", "img": "wellness.png" }
+  ],
+  "pool": [
+    { "name": "Budvar", "price": 59, "currency": "CZK", "img": "budvar.png" },
+    { "name": "Malibu", "price": 99, "currency": "CZK", "img": "malibu.png" },
+    { "name": "Jack s colou", "price": 99, "currency": "CZK", "img": "jack_cola.png" },
+    { "name": "Moscow Mule", "price": 99, "currency": "CZK", "img": "moscow_mule.png" },
+    { "name": "Gin-Tonic", "price": 99, "currency": "CZK", "img": "gin_tonic.png" },
+    { "name": "Mojito", "price": 99, "currency": "CZK", "img": "mojito.png" },
+    { "name": "Coca-Cola", "price": 32, "currency": "CZK", "img": "coca_cola.png" },
+    { "name": "Sprite", "price": 32, "currency": "CZK", "img": "sprite.png" },
+    { "name": "Red Bull", "price": 59, "currency": "CZK", "img": "red_bull.png" },
+    { "name": "Prosecco", "price": 390, "currency": "CZK", "img": "prosecco.png" },
+    { "name": "Pivo sud 30 l", "price": 125, "currency": "EUR", "img": "pivo30.png" },
+    { "name": "Pivo sud 50 l", "price": 175, "currency": "EUR", "img": "pivo50.png" },
+    { "name": "Plyn", "price": 12, "currency": "EUR", "img": "Plyn.png" },
+    { "name": "Gril", "price": 20, "currency": "EUR", "img": "grill.png" },
+    { "name": "Wellness", "price": "custom", "currency": "EUR", "img": "wellness.png" }
+  ],
+  "castle": [
+    { "name": "Budvar", "price": 59, "currency": "CZK", "img": "budvar.png" },
+    { "name": "Malibu", "price": 99, "currency": "CZK", "img": "malibu.png" },
+    { "name": "Jack s colou", "price": 99, "currency": "CZK", "img": "jack_cola.png" },
+    { "name": "Moscow Mule", "price": 99, "currency": "CZK", "img": "moscow_mule.png" },
+    { "name": "Gin-Tonic", "price": 99, "currency": "CZK", "img": "gin_tonic.png" },
+    { "name": "Mojito", "price": 99, "currency": "CZK", "img": "mojito.png" },
+    { "name": "Prosecco", "price": 390, "currency": "CZK", "img": "prosecco.png" },
+    { "name": "Pivo sud 30 l", "price": 125, "currency": "EUR", "img": "pivo30.png" },
+    { "name": "Pivo sud 50 l", "price": 175, "currency": "EUR", "img": "pivo50.png" },
+    { "name": "Plyn", "price": 12, "currency": "EUR", "img": "Plyn.png" },
+    { "name": "Gril", "price": 20, "currency": "EUR", "img": "grill.png" },
+    { "name": "Wellness", "price": "custom", "currency": "EUR", "img": "wellness.png" }
+  ],
+  "shared": {
+    "city_tax": { "name": "City Tax", "img": "citytex.png" },
+    "guests": { "name": "Počet hostů", "img": "guests.png" },
+    "nights": { "name": "Počet nocí", "img": "nights.png" }
+  }
+}
