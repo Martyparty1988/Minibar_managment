@@ -32,89 +32,61 @@
 
         .form-group {
             margin-top: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
         }
 
         .form-item {
             position: relative;
-            width: 100%;
-            padding-top: 100%;
+            width: 250px;
+            height: 250px;
             background: linear-gradient(135deg, #81ecec, #63cdda);
-            border-radius: 12px;
+            border-radius: 16px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
             cursor: pointer;
         }
 
         .form-item img {
-            position: absolute;
-            top: 10%;
-            left: 10%;
-            right: 10%;
-            bottom: 10%;
             width: 80%;
             height: 80%;
             object-fit: contain;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .grid-item {
-            position: relative;
-            width: 100%;
-            padding-top: 100%;
-            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
+        .bubble {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .grid-item:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-        }
-
-        .grid-item img {
-            position: absolute;
-            top: 10%;
-            left: 10%;
-            right: 10%;
-            bottom: 10%;
-            width: 80%;
-            height: 80%;
-            object-fit: contain;
-        }
-
-        .badge {
-            position: absolute;
-            top: 10%;
-            right: 10%;
-            background: red;
-            color: white;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: none;
-            align-items: center;
-            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .bubble:hover {
+            background: #ff4e50;
+        }
+
+        .bubble-left {
+            left: -20px;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .bubble-right {
+            right: -20px;
+            top: 50%;
+            transform: translate(50%, -50%);
         }
 
         .summary {
@@ -125,18 +97,19 @@
         }
 
         button {
+            margin-top: 20px;
             width: 100%;
-            padding: 10px;
+            padding: 15px;
             font-size: 18px;
             color: white;
-            background-color: #ff4e50;
+            background: #ff4e50;
             border: none;
             border-radius: 8px;
             cursor: pointer;
         }
 
         button:hover {
-            background-color: #ff6f61;
+            background: #ff6f61;
         }
     </style>
 </head>
@@ -144,80 +117,50 @@
     <div class="container">
         <h1>Mini Bar Management</h1>
 
-        <!-- Formulářové prvky -->
+        <!-- City Tax -->
         <div class="form-group">
-            <div class="form-item" onclick="toggleCityTax()">
+            <div class="form-item">
                 <img src="images/citytex.png" alt="City Tax">
+                <div class="bubble bubble-left" onclick="incrementGuests()">0</div>
+                <div class="bubble bubble-right" onclick="incrementNights()">0</div>
             </div>
         </div>
-
-        <!-- Rozbalovací možnosti pro City Tax -->
-        <div class="form-group" id="city-tax-options" style="display: none;">
-            <div class="form-item">
-                <img src="images/guests.png" alt="Počet hostů">
-                <input type="number" id="guests" placeholder="Počet hostů" onchange="updateCityTax()">
-            </div>
-            <div class="form-item">
-                <img src="images/nights.png" alt="Počet nocí">
-                <input type="number" id="nights" placeholder="Počet nocí" onchange="updateCityTax()">
-            </div>
-        </div>
-
-        <!-- Grid pro minibar -->
-        <div class="grid" id="items"></div>
 
         <!-- Shrnutí -->
         <div class="summary" id="summary">City Tax: 0 EUR</div>
 
-        <!-- Tlačítka -->
+        <!-- Tlačítko -->
         <button onclick="generateInvoice()">Generovat fakturu</button>
     </div>
 
     <script>
-        let inventory = {};
-        let sharedItems = {};
-        let cityTaxVisible = false;
+        let guestsCount = 0;
+        let nightsCount = 0;
 
-        async function loadJSON() {
-            const response = await fetch('data.json');
-            const data = await response.json();
-            inventory = data;
-            sharedItems = data.shared;
-            loadItems();
+        // Zvýšení počtu hostů
+        function incrementGuests() {
+            guestsCount++;
+            document.querySelector('.bubble-left').textContent = guestsCount;
+            updateCityTax();
         }
 
-        function toggleCityTax() {
-            cityTaxVisible = !cityTaxVisible;
-            document.getElementById("city-tax-options").style.display = cityTaxVisible ? "grid" : "none";
+        // Zvýšení počtu nocí
+        function incrementNights() {
+            nightsCount++;
+            document.querySelector('.bubble-right').textContent = nightsCount;
+            updateCityTax();
         }
 
+        // Aktualizace City Tax
         function updateCityTax() {
-            const guests = parseInt(document.getElementById("guests").value) || 0;
-            const nights = parseInt(document.getElementById("nights").value) || 0;
-            const total = guests * nights * 2; // 2 € za osobu na noc
-            document.getElementById("summary").textContent = `City Tax: ${total} EUR`;
+            const cityTax = guestsCount * nightsCount * 2; // 2 EUR za hosta za noc
+            document.getElementById("summary").textContent = `City Tax: ${cityTax} EUR`;
         }
 
-        function loadItems() {
-            const villa = "ohyeah"; // Default vila
-            const container = document.getElementById("items");
-            container.innerHTML = "";
-            inventory[villa].forEach((item, index) => {
-                container.innerHTML += `
-                    <div class="grid-item" id="item-${index}" onclick="addItem(${index})">
-                        <img src="images/${item.img}" alt="${item.name}">
-                        <div class="badge" id="badge-${index}" style="display: none;">0</div>
-                    </div>`;
-            });
+        // Generování faktury (placeholder)
+        function generateInvoice() {
+            alert("Faktura byla vygenerována!");
         }
-
-        function addItem(index) {
-            const badge = document.getElementById(`badge-${index}`);
-            badge.style.display = "flex";
-            badge.textContent = parseInt(badge.textContent || "0") + 1;
-        }
-
-        window.onload = loadJSON;
     </script>
 </body>
 </html>
