@@ -1,52 +1,154 @@
-{
-  "ohyeah": [
-    { "name": "Budvar", "price": 59, "currency": "CZK", "img": "budvar.png" },
-    { "name": "Malibu", "price": 99, "currency": "CZK", "img": "malibu.png" },
-    { "name": "Jack s colou", "price": 99, "currency": "CZK", "img": "jack_cola.png" },
-    { "name": "Moscow Mule", "price": 99, "currency": "CZK", "img": "moscow_mule.png" },
-    { "name": "Gin-Tonic", "price": 99, "currency": "CZK", "img": "gin_tonic.png" },
-    { "name": "Mojito", "price": 99, "currency": "CZK", "img": "mojito.png" },
-    { "name": "Prosecco", "price": 390, "currency": "CZK", "img": "prosecco.png" },
-    { "name": "Pivo sud 30 l", "price": 125, "currency": "EUR", "img": "pivo30.png" },
-    { "name": "Pivo sud 50 l", "price": 175, "currency": "EUR", "img": "pivo50.png" },
-    { "name": "Plyn", "price": 12, "currency": "EUR", "img": "Plyn.png" },
-    { "name": "Gril", "price": 20, "currency": "EUR", "img": "grill.png" },
-    { "name": "Wellness", "price": "custom", "currency": "EUR", "img": "wellness.png" }
-  ],
-  "pool": [
-    { "name": "Budvar", "price": 59, "currency": "CZK", "img": "budvar.png" },
-    { "name": "Malibu", "price": 99, "currency": "CZK", "img": "malibu.png" },
-    { "name": "Jack s colou", "price": 99, "currency": "CZK", "img": "jack_cola.png" },
-    { "name": "Moscow Mule", "price": 99, "currency": "CZK", "img": "moscow_mule.png" },
-    { "name": "Gin-Tonic", "price": 99, "currency": "CZK", "img": "gin_tonic.png" },
-    { "name": "Mojito", "price": 99, "currency": "CZK", "img": "mojito.png" },
-    { "name": "Coca-Cola", "price": 32, "currency": "CZK", "img": "coca_cola.png" },
-    { "name": "Sprite", "price": 32, "currency": "CZK", "img": "sprite.png" },
-    { "name": "Red Bull", "price": 59, "currency": "CZK", "img": "red_bull.png" },
-    { "name": "Prosecco", "price": 390, "currency": "CZK", "img": "prosecco.png" },
-    { "name": "Pivo sud 30 l", "price": 125, "currency": "EUR", "img": "pivo30.png" },
-    { "name": "Pivo sud 50 l", "price": 175, "currency": "EUR", "img": "pivo50.png" },
-    { "name": "Plyn", "price": 12, "currency": "EUR", "img": "Plyn.png" },
-    { "name": "Gril", "price": 20, "currency": "EUR", "img": "grill.png" },
-    { "name": "Wellness", "price": "custom", "currency": "EUR", "img": "wellness.png" }
-  ],
-  "castle": [
-    { "name": "Budvar", "price": 59, "currency": "CZK", "img": "budvar.png" },
-    { "name": "Malibu", "price": 99, "currency": "CZK", "img": "malibu.png" },
-    { "name": "Jack s colou", "price": 99, "currency": "CZK", "img": "jack_cola.png" },
-    { "name": "Moscow Mule", "price": 99, "currency": "CZK", "img": "moscow_mule.png" },
-    { "name": "Gin-Tonic", "price": 99, "currency": "CZK", "img": "gin_tonic.png" },
-    { "name": "Mojito", "price": 99, "currency": "CZK", "img": "mojito.png" },
-    { "name": "Prosecco", "price": 390, "currency": "CZK", "img": "prosecco.png" },
-    { "name": "Pivo sud 30 l", "price": 125, "currency": "EUR", "img": "pivo30.png" },
-    { "name": "Pivo sud 50 l", "price": 175, "currency": "EUR", "img": "pivo50.png" },
-    { "name": "Plyn", "price": 12, "currency": "EUR", "img": "Plyn.png" },
-    { "name": "Gril", "price": 20, "currency": "EUR", "img": "grill.png" },
-    { "name": "Wellness", "price": "custom", "currency": "EUR", "img": "wellness.png" }
-  ],
-  "shared": {
-    "city_tax": { "name": "City Tax", "img": "citytex.png" },
-    "guests": { "name": "Počet hostů", "img": "guests.png" },
-    "nights": { "name": "Počet nocí", "img": "nights.png" }
-  }
-}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Bar Management</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff4e50, #f9d423);
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff4e50;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .form-item {
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+            background: linear-gradient(135deg, #81ecec, #63cdda);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .form-item img {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+        }
+
+        .sub-options {
+            display: none; /* Skryto, dokud na City Tax nekliknete */
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .sub-item {
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 10px;
+        }
+
+        .sub-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .sub-item input {
+            width: 60%;
+            margin-top: 10px;
+            padding: 5px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mini Bar Management</h1>
+
+        <!-- Formulář pro City Tax -->
+        <div class="form-group">
+            <div class="form-item" onclick="toggleCityTax()">
+                <img src="images/citytex.png" alt="City Tax">
+            </div>
+        </div>
+
+        <!-- Rozbalovací možnosti pro City Tax -->
+        <div class="sub-options" id="city-tax-options">
+            <div class="sub-item">
+                <img src="images/guests.png" alt="Počet hostů">
+                <input type="number" id="guests" placeholder="Počet hostů" onchange="updateCityTax()">
+            </div>
+            <div class="sub-item">
+                <img src="images/nights.png" alt="Počet nocí">
+                <input type="number" id="nights" placeholder="Počet nocí" onchange="updateCityTax()">
+            </div>
+        </div>
+
+        <!-- Shrnutí -->
+        <div class="summary" id="summary">City Tax: 0 EUR</div>
+    </div>
+
+    <script>
+        let cityTaxVisible = false;
+
+        // Přepínání viditelnosti City Tax ikon
+        function toggleCityTax() {
+            cityTaxVisible = !cityTaxVisible;
+            const options = document.getElementById("city-tax-options");
+            options.style.display = cityTaxVisible ? "grid" : "none";
+        }
+
+        // Výpočet City Tax
+        function updateCityTax() {
+            const guests = parseInt(document.getElementById("guests").value) || 0;
+            const nights = parseInt(document.getElementById("nights").value) || 0;
+            const total = guests * nights * 2; // 2 € za osobu na noc
+            document.getElementById("summary").textContent = `City Tax: ${total} EUR`;
+        }
+    </script>
+</body>
+</html>
