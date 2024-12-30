@@ -30,9 +30,30 @@
             margin-bottom: 20px;
         }
 
+        .villa-selection {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .villa-selection button {
+            background: #ff4e50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 0 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .villa-selection button:hover {
+            background: #ff6f61;
+        }
+
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 15px;
             margin-top: 20px;
         }
@@ -57,53 +78,25 @@
         }
 
         .grid-item img {
-            position: absolute;
-            top: 10%;
-            left: 10%;
-            right: 10%;
-            bottom: 10%;
-            width: 80%;
-            height: 80%;
+            width: 60%;
+            height: 60%;
             object-fit: contain;
-        }
-
-        .city-tax {
-            position: relative;
-            background: linear-gradient(135deg, #81ecec, #63cdda);
         }
 
         .bubble {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            background: white;
+            top: 10%;
+            right: 10%;
+            background: red;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
             border-radius: 50%;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s;
-        }
-
-        .bubble:hover {
-            transform: scale(1.1);
-        }
-
-        .bubble-left {
-            left: 10%;
-            bottom: 10%;
-        }
-
-        .bubble-right {
-            right: 10%;
-            bottom: 10%;
-        }
-
-        .bubble img {
-            width: 80%;
-            height: 80%;
-            object-fit: contain;
         }
 
         .summary {
@@ -134,22 +127,20 @@
     <div class="container">
         <h1>Mini Bar Management</h1>
 
+        <!-- Výběr vily -->
+        <div class="villa-selection">
+            <button onclick="selectVilla('ohyeah')">OH YEAH vila</button>
+            <button onclick="selectVilla('pool')">Amazing Pool vila</button>
+            <button onclick="selectVilla('castle')">Little Castle vila</button>
+        </div>
+
         <!-- Grid pro položky minibaru -->
         <div class="grid" id="items"></div>
 
-        <!-- City Tax -->
-        <div class="grid-item city-tax">
-            <img src="images/citytex.png" alt="City Tax">
-            <div class="bubble bubble-left" onclick="incrementGuests()">
-                <img src="images/guests.png" alt="Guests">
-            </div>
-            <div class="bubble bubble-right" onclick="incrementNights()">
-                <img src="images/nights.png" alt="Nights">
-            </div>
-        </div>
-
         <!-- Shrnutí -->
-        <div class="summary" id="summary">City Tax: 0 EUR</div>
+        <div class="summary" id="summary">
+            Počet hostů: 0 | Počet nocí: 0
+        </div>
 
         <!-- Tlačítko -->
         <button onclick="generateInvoice()">Generovat fakturu</button>
@@ -159,56 +150,78 @@
         let inventory = {};
         let guestsCount = 0;
         let nightsCount = 0;
+        let selectedVilla = 'ohyeah';
 
         // Načtení dat z JSON
         async function loadJSON() {
             const response = await fetch('data.json');
             const data = await response.json();
             inventory = data;
-            loadItems('ohyeah'); // Default vila
+            loadItems(selectedVilla);
+        }
+
+        // Změna vily
+        function selectVilla(villa) {
+            selectedVilla = villa;
+            loadItems(villa);
         }
 
         // Načtení položek z JSON
         function loadItems(villa) {
             const container = document.getElementById("items");
             container.innerHTML = "";
+
+            // Položka hosté
+            container.innerHTML += `
+                <div class="grid-item" onclick="incrementGuests()">
+                    <img src="images/guests.png" alt="Počet hostů">
+                    <div class="bubble" id="guest-count">0</div>
+                </div>`;
+
+            // Položka noci
+            container.innerHTML += `
+                <div class="grid-item" onclick="incrementNights()">
+                    <img src="images/nights.png" alt="Počet nocí">
+                    <div class="bubble" id="night-count">0</div>
+                </div>`;
+
+            // Ostatní položky
             inventory[villa].forEach((item, index) => {
                 container.innerHTML += `
-                    <div class="grid-item" onclick="addItem(${index}, '${villa}')">
+                    <div class="grid-item" onclick="incrementItem(${index}, '${villa}')">
                         <img src="images/${item.img}" alt="${item.name}">
-                        <div class="bubble" id="badge-${index}" style="display: none;">0</div>
+                        <div class="bubble" id="item-count-${index}">0</div>
                     </div>`;
             });
         }
 
-        // Přidání položky
-        function addItem(index, villa) {
-            const badge = document.getElementById(`badge-${index}`);
-            badge.style.display = "flex";
-            badge.textContent = parseInt(badge.textContent || "0") + 1;
-        }
-
-        // Zvýšení počtu hostů
+        // Změna počtu hostů
         function incrementGuests() {
             guestsCount++;
-            updateCityTax();
+            document.getElementById("guest-count").textContent = guestsCount;
+            updateSummary();
         }
 
-        // Zvýšení počtu nocí
         function incrementNights() {
             nightsCount++;
-            updateCityTax();
+            document.getElementById("night-count").textContent = nightsCount;
+            updateSummary();
         }
 
-        // Aktualizace City Tax
-        function updateCityTax() {
-            const cityTax = guestsCount * nightsCount * 2; // 2 EUR za hosta za noc
-            document.getElementById("summary").textContent = `City Tax: ${cityTax} EUR`;
+        // Přidání položek
+        function incrementItem(index, villa) {
+            const count = document.getElementById(`item-count-${index}`);
+            count.textContent = parseInt(count.textContent) + 1;
         }
 
-        // Generování faktury (placeholder)
+        // Aktualizace shrnutí
+        function updateSummary() {
+            document.getElementById("summary").textContent = `Počet hostů: ${guestsCount} | Počet nocí: ${nightsCount}`;
+        }
+
+        // Generování faktury
         function generateInvoice() {
-            alert("Faktura byla vygenerována!");
+            window.location.href = "faktura.html";
         }
 
         window.onload = loadJSON;
