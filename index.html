@@ -67,28 +67,24 @@
             object-fit: contain;
         }
 
-        .form-group {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .city-tax {
             position: relative;
-        }
-
-        .form-item {
-            position: relative;
-            width: 250px;
-            height: 250px;
+            width: 100%;
+            padding-top: 100%; /* Čtvercový tvar */
             background: linear-gradient(135deg, #81ecec, #63cdda);
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
         }
 
-        .form-item img {
+        .city-tax img {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
             width: 80%;
             height: 80%;
             object-fit: contain;
@@ -96,8 +92,8 @@
 
         .bubble {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 40px;
+            height: 40px;
             background: white;
             border-radius: 50%;
             display: flex;
@@ -113,15 +109,15 @@
         }
 
         .bubble-left {
-            left: -40px;
+            left: 10px;
             top: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateY(-50%);
         }
 
         .bubble-right {
-            right: -40px;
+            right: 10px;
             top: 50%;
-            transform: translate(50%, -50%);
+            transform: translateY(-50%);
         }
 
         .bubble img {
@@ -162,15 +158,13 @@
         <div class="grid" id="items"></div>
 
         <!-- City Tax -->
-        <div class="form-group">
-            <div class="form-item">
-                <img src="images/citytex.png" alt="City Tax">
-                <div class="bubble bubble-left" onclick="incrementGuests()">
-                    <img src="images/guests.png" alt="Guests">
-                </div>
-                <div class="bubble bubble-right" onclick="incrementNights()">
-                    <img src="images/nights.png" alt="Nights">
-                </div>
+        <div class="grid-item city-tax">
+            <img src="images/citytex.png" alt="City Tax">
+            <div class="bubble bubble-left" onclick="incrementGuests()">
+                <img src="images/guests.png" alt="Guests">
+            </div>
+            <div class="bubble bubble-right" onclick="incrementNights()">
+                <img src="images/nights.png" alt="Nights">
             </div>
         </div>
 
