@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faktura</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f3f3f3;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff4e50;
+            margin-bottom: 10px;
+        }
+
+        .date {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .invoice {
+            margin-top: 20px;
+        }
+
+        .invoice-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .invoice-item:last-child {
+            border-bottom: none;
+        }
+
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .currency-selector {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .currency-selector button {
+            background: #ff4e50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .currency-selector button:hover {
+            background: #ff6f61;
+        }
+
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .actions button {
+            background: #ff4e50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .actions button:hover {
+            background: #ff6f61;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="villa-name">Faktura</h1>
+        <div class="date" id="invoice-date"></div>
+
+        <!-- Seznam zakoupených položek -->
+        <div class="invoice" id="invoice"></div>
+
+        <!-- Celková částka -->
+        <div class="total" id="total">Celkem: 0 CZK</div>
+
+        <!-- Výběr měny -->
+        <div class="currency-selector">
+            <button onclick="setCurrency('CZK')">CZK</button>
+            <button onclick="setCurrency('EUR')">EUR</button>
+        </div>
+
+        <!-- Akce -->
+        <div class="actions">
+            <button onclick="goBack()">Zpět</button>
+            <button onclick="finalizeInvoice()">Dokončit</button>
+        </div>
+    </div>
+
+    <script>
+        let invoiceItems = JSON.parse(localStorage.getItem('invoice')) || [];
+        let currency = 'CZK';
+        const villaName = localStorage.getItem('selectedVilla') || 'Vybraná vila';
+
+        function renderInvoice() {
+            const invoiceContainer = document.getElementById('invoice');
+            const totalContainer = document.getElementById('total');
+            const villaNameContainer = document.getElementById('villa-name');
+            const dateContainer = document.getElementById('invoice-date');
+            
+            villaNameContainer.textContent = villaName;
+
+            // Nastavení aktuálního data
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString('cs-CZ', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            dateContainer.textContent = `Datum: ${formattedDate}`;
+
+            invoiceContainer.innerHTML = '';
+            let total = 0;
+
+            invoiceItems.forEach(item => {
+                const price = currency === 'CZK' ? item.priceCZK : item.priceEUR;
+                total += price * item.quantity;
+
+                invoiceContainer.innerHTML += `
+                    <div class="invoice-item">
+                        <span>${item.name}</span>
+                        <span>${item.quantity} × ${price} ${currency}</span>
+                    </div>
+                `;
+            });
+
+            totalContainer.textContent = `Celkem: ${total.toFixed(2)} ${currency}`;
+        }
+
+        function setCurrency(selectedCurrency) {
+            currency = selectedCurrency;
+            renderInvoice();
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function finalizeInvoice() {
+            alert('Faktura byla dokončena!');
+            localStorage.removeItem('invoice');
+            goBack();
+        }
+
+        window.onload = renderInvoice;
+    </script>
+</body>
+</html>
