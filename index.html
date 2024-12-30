@@ -61,32 +61,36 @@
             position: absolute;
             width: 60px;
             height: 60px;
-            background: #ff6b6b;
-            color: white;
+            background: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
         }
 
         .bubble:hover {
-            background: #ff4e50;
+            transform: scale(1.1);
         }
 
         .bubble-left {
-            left: -20px;
+            left: -40px;
             top: 50%;
             transform: translate(-50%, -50%);
         }
 
         .bubble-right {
-            right: -20px;
+            right: -40px;
             top: 50%;
             transform: translate(50%, -50%);
+        }
+
+        .bubble img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
         }
 
         .summary {
@@ -121,8 +125,12 @@
         <div class="form-group">
             <div class="form-item">
                 <img src="images/citytex.png" alt="City Tax">
-                <div class="bubble bubble-left" onclick="incrementGuests()">0</div>
-                <div class="bubble bubble-right" onclick="incrementNights()">0</div>
+                <div class="bubble bubble-left" onclick="incrementGuests()">
+                    <img src="images/guests.png" alt="Guests">
+                </div>
+                <div class="bubble bubble-right" onclick="incrementNights()">
+                    <img src="images/nights.png" alt="Nights">
+                </div>
             </div>
         </div>
 
@@ -140,14 +148,12 @@
         // Zvýšení počtu hostů
         function incrementGuests() {
             guestsCount++;
-            document.querySelector('.bubble-left').textContent = guestsCount;
             updateCityTax();
         }
 
         // Zvýšení počtu nocí
         function incrementNights() {
             nightsCount++;
-            document.querySelector('.bubble-right').textContent = nightsCount;
             updateCityTax();
         }
 
